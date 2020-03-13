@@ -1,0 +1,31 @@
+.player {
+  width: 100%;
+  max-width: 1280px;
+  max-height: 960px;
+  background: black;
+
+  .video {
+    width: 100%;
+  }
+
+  .progress,
+  .mat-slider {
+    width: 100%;
+  }
+
+  .controls {
+    background: black;
+    color: white;
+  }
+}
+
+.mat-toolbar-row {
+  height: 24px;
+}
+
+// flex layout helper
+.fill-remaining-space {
+  /* This fills the remaining space, by using flexbox.
+Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
+}

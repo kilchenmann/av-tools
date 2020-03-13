@@ -1,0 +1,15 @@
+@import "theme";
+@import "elements";
+
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+  //  overflow: hidden;
+}
+
+// jdnconvertiblecalendar main style
+.mat-datepicker-content {
+  .mat-calendar {
+    height: auto !important;
+  }
+}
