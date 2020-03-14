@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VideoToolComponent implements OnInit {
 
-    video: string = "/data/falcon9/falcon9.mp4";
+    video: string = "falcon9";
 
     constructor() { }
 

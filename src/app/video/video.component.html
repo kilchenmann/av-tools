@@ -2,7 +2,7 @@
     <video
         class="video"
         #video
-        [src]="src"
+        [src]="'data/' + file + '/' + file + '.mp4'"
         type="video/mp4"
         preload="auto"
         [muted]="muted"
@@ -21,10 +21,12 @@
                 [max]="duration"
                 [min]="0"
                 (input)="updateTimeFromSlider($event)"
-                (mouseover)="preview($event)"
+                (mousemove)="updatePreview($event)"
+                (mouseenter)="displayPreview('block')"
+                (mouseleave)="displayPreview('none')"
             ></mat-slider>
         </mat-toolbar-row>
-        <mat-toolbar-row>
+        <mat-toolbar-row class="buttons">
             <button mat-icon-button (click)="togglePlay()">
                 <mat-icon>{{ play ? "pause" : "play_arrow" }}</mat-icon>
             </button>
@@ -34,7 +36,7 @@
             </button>
 
             <div (wheel)="updateTimeFromScroll($event)">
-                <p class="mat-body-2 time" (click)="togglePlay()">
+                <p class="mat-body-1 time" (click)="togglePlay()">
                     {{ currentTime | kuiTime }} / {{ duration | kuiTime }}
                 </p>
             </div>
@@ -44,7 +46,9 @@
             </button>
             <span class="fill-remaining-space"></span>
             <button mat-icon-button (click)="muted = !muted">
-                <mat-icon>{{ muted ? "volume_off" : "volume_up" }}</mat-icon>
+                <mat-icon>
+                    {{ muted ? "muted" : "volume_up" }}
+                </mat-icon>
             </button>
             <button mat-icon-button (click)="cinemaView = !cinemaView">
                 <mat-icon>{{
@@ -53,4 +57,11 @@
             </button>
         </mat-toolbar-row>
     </mat-toolbar>
+</div>
+
+<!-- preview image -->
+<div class="preview" #preview>
+    <p class="preview-time">
+        <span class="time">{{ previewTime | kuiTime }}</span>
+    </p>
 </div>
