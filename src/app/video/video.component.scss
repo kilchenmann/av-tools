@@ -4,6 +4,18 @@
   max-height: 960px;
   background: black;
 
+  &.cinema {
+    max-width: 100vw;
+    max-height: 80vh;
+    margin: 0;
+    left: 0;
+    position: absolute;
+
+    .video {
+      max-height: 960px;
+    }
+  }
+
   .video {
     width: 100%;
   }
@@ -11,11 +23,20 @@
   .progress,
   .mat-slider {
     width: 100%;
+    margin-bottom: 8px;
+    cursor: pointer;
   }
 
   .controls {
     background: black;
     color: white;
+    padding-bottom: 16px;
+
+    .time {
+      margin-top: 12px;
+      padding: 0 6px;
+      cursor: all-scroll;
+    }
   }
 }
 

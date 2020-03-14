@@ -1,4 +1,4 @@
-<div class="player" kuiDisableContextMenu>
+<div class="player" kuiDisableContextMenu [class.cinema]="cinemaView">
     <video
         class="video"
         #video
@@ -15,35 +15,41 @@
         [bufferValue]="currentBuffer" [color]="'primary'" (click)="goto($event)">
     </mat-progress-bar> -->
     <mat-toolbar class="controls">
-        <mat-toolbar-row>
-            <div class="progress">
-                <mat-slider
-                    [value]="currentTime"
-                    [max]="duration"
-                    [min]="0"
-                    (input)="goto($event)"
-                ></mat-slider>
-            </div>
+        <mat-toolbar-row class="progress" #progress>
+            <mat-slider
+                [value]="currentTime"
+                [max]="duration"
+                [min]="0"
+                (input)="updateTimeFromSlider($event)"
+                (mouseover)="preview($event)"
+            ></mat-slider>
         </mat-toolbar-row>
         <mat-toolbar-row>
             <button mat-icon-button (click)="togglePlay()">
                 <mat-icon>{{ play ? "pause" : "play_arrow" }}</mat-icon>
             </button>
             <span class="fill-remaining-space"></span>
-            <button mat-icon-button (click)="navigate(-10)">
+            <button mat-icon-button (click)="updateTimeFromButton(-10)">
                 <mat-icon>replay_10</mat-icon>
             </button>
 
-            <div (scroll)="goto($event)">
-                {{ currentTime | kuiTime }}
+            <div (wheel)="updateTimeFromScroll($event)">
+                <p class="mat-body-2 time" (click)="togglePlay()">
+                    {{ currentTime | kuiTime }} / {{ duration | kuiTime }}
+                </p>
             </div>
 
-            <button mat-icon-button (click)="navigate(+10)">
+            <button mat-icon-button (click)="updateTimeFromButton(+10)">
                 <mat-icon>forward_10</mat-icon>
             </button>
             <span class="fill-remaining-space"></span>
             <button mat-icon-button (click)="muted = !muted">
                 <mat-icon>{{ muted ? "volume_off" : "volume_up" }}</mat-icon>
+            </button>
+            <button mat-icon-button (click)="cinemaView = !cinemaView">
+                <mat-icon>{{
+                    cinemaView ? "fullscreen_exit" : "fullscreen"
+                }}</mat-icon>
             </button>
         </mat-toolbar-row>
     </mat-toolbar>
