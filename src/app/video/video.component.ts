@@ -215,12 +215,15 @@ export class VideoComponent implements OnInit {
 
         // position from left:
         let leftPosition: number = ev.clientX - this.halfFrameWidth;
+        // prevent overflow of preview image on the left
         if (leftPosition <= (this.halfFrameWidth)) {
             leftPosition = this.halfFrameWidth;
         }
+        // prevent overflow of preview image on the right
         if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth)) {
             leftPosition = this.progressBarWidth - this.halfFrameWidth + 24;
         }
+        // set preview positon on x axis
         this.preview.nativeElement.style['left'] = leftPosition + 'px';
 
     }
