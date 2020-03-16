@@ -1,5 +1,4 @@
-import { element } from 'protractor';
-import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 
 @Component({
@@ -7,7 +6,7 @@ import { MatSliderChange } from '@angular/material/slider';
     templateUrl: './video.component.html',
     styleUrls: ['./video.component.scss']
 })
-export class VideoComponent implements OnInit, AfterViewChecked {
+export class VideoComponent implements OnInit {
 
     @Input() file: string;
 
@@ -15,22 +14,46 @@ export class VideoComponent implements OnInit, AfterViewChecked {
     @ViewChild('progress') progress: ElementRef;
     @ViewChild('preview') preview: ElementRef;
 
+    // video information
     videoWidth: number = 1280;
     videoHeight: number;
     aspectRatio: number;
 
+    // preview image information
+    frameWidth: number = 160;
+    halfFrameWidth: number = Math.round(this.frameWidth / 2);
+    frameHeight: number;
+    lastFrameNr: number;
+
+    // preview images are organised in matrix files; we'll need the last number of those files
+    matrixWidth: number = Math.round(this.frameWidth * 6);
+    matrixHeight: number;
+    lastMatrixNr: number;
+    lastMatrixLine: number;
+
+    // size of progress bar / timeline
+    progressBarWidth: number
+
+    // time information
+    duration: number;
     currentTime: number = 0;
     previewTime: number;
-    duration: number;
 
+    // seconds per pixel to calculate preview image on timeline
+    secondsPerPixel: number;
+
+    // percent of video loaded
     currentBuffer: number;
 
+    // status
     play: boolean = false;
 
+    // volume
     volume: number = .5;
     muted: boolean = false;
 
-    cinemaView: boolean = false;
+    // video player mode
+    cinemaMode: boolean = false;
 
     constructor() { }
 
@@ -38,11 +61,9 @@ export class VideoComponent implements OnInit, AfterViewChecked {
 
     }
 
-    ngAfterViewChecked(): void {
-        // console.log('buffered start', this.video.nativeElement.buffered.start(0));
-        // console.log('buffered end', this.video.nativeElement.buffered.end(0));
-    }
-
+    /**
+     * toggle play / pause
+     */
     togglePlay() {
 
         this.play = !this.play;
@@ -55,58 +76,97 @@ export class VideoComponent implements OnInit, AfterViewChecked {
 
     }
 
+    /**
+     * Update of current time info and buffer state
+     *
+     * @param  {Event} ev
+     */
     timeUpdate(ev: Event) {
         // current time
-        this.currentTime = this.video.nativeElement.currentTime; // (<HTMLVideoElement>ev.target).currentTime;
+        this.currentTime = this.video.nativeElement.currentTime;
 
         // buffer progress
         this.currentBuffer = (this.video.nativeElement.buffered.end(0) / this.duration) * 100;
     }
 
-    statusUpdate(ev: Event) {
+    /**
+     * As soon as video has status "loadedmetadata" we're able to read
+     * information about duration, video size and set volume
+     *
+     * @param  {Event} ev
+     */
+    loadedMetadata(ev: Event) {
+        // get video duration
         this.duration = this.video.nativeElement.duration;
-        this.video.nativeElement.volume = this.volume;
-        // calc aspect ratio; will be used for preview
-        this.aspectRatio = this.video.nativeElement.videoWidth / this.video.nativeElement.videoHeight;
-    }
 
+        // calculate aspect ratio and set preview image size
+        this.aspectRatio = this.video.nativeElement.videoWidth / this.video.nativeElement.videoHeight;
+        this.frameHeight = Math.round(this.frameWidth / this.aspectRatio);
+        this.preview.nativeElement.style['width'] = this.frameWidth + 'px';
+        this.preview.nativeElement.style['height'] = this.frameHeight + 'px';
+
+        // get last frame and matrix number and last matrix line
+        this.lastMatrixNr = Math.floor((this.duration - 30) / 360);
+        this.lastFrameNr = Math.round((this.duration - 9) / 10);
+        this.lastMatrixLine = Math.ceil((this.lastFrameNr - (this.lastMatrixNr * 36)) / 6);
+
+        // set default volume
+        this.video.nativeElement.volume = this.volume;
+    }
+    /**
+     * Video navigation from button (-/+ 10 sec)
+     *
+     * @param  {number} range
+     */
     updateTimeFromButton(range: number) {
         this.navigate(this.currentTime + range);
     }
-
+    /**
+     * Video naviagtion from timeline / progress bar
+     *
+     * @param  {MatSliderChange} ev
+     */
     updateTimeFromSlider(ev: MatSliderChange) {
         this.navigate(ev.value);
     }
-
+    /**
+     * Video navigation from scroll event
+     *
+     * @param  {WheelEvent} ev
+     */
     updateTimeFromScroll(ev: WheelEvent) {
         this.navigate(this.currentTime + (ev.deltaY / 25));
     }
-
+    /**
+     * General video navigation: Update current video time from position
+     *
+     * @param  {number} position
+     */
     private navigate(position: number) {
 
         this.video.nativeElement.currentTime = position;
     }
 
-    onResize(event) {
-        // console.log('width on resize', this.player.nativeElement.offsetWidth);
+    /**
+     * toggle video size: cinema mode = almost fullscreen vs. normal size
+     */
+    toggleCinemaMode() {
+        this.cinemaMode = !this.cinemaMode;
+        // this.preview.nativeElement.style['top'] = (this.video.nativeElement.offsetTop + this.video.nativeElement.offsetHeight - frameHeight - 8) + 'px';
+        console.log(this.video);
     }
 
+    /**
+     * Show preview image during "mousemove" on progress bar / timeline
+     *
+     * @param  {MouseEvent} ev
+     */
     updatePreview(ev: MouseEvent) {
-
-        // TODO: move to top
-        const frameWidth: number = 160;
-        const frameHeight: number = Math.round(frameWidth / this.aspectRatio);
-
-        this.preview.nativeElement.style['width'] = frameWidth + 'px';
-        this.preview.nativeElement.style['height'] = frameHeight + 'px';
-
-        const progressBarWidth: number = this.progress.nativeElement.offsetWidth - 32 - 16;
-        const secondsPerPixel = this.duration / progressBarWidth;
-
-        // End of TODO;
-
+        // mouse position
         const position: number = ev.clientX - this.progress.nativeElement.offsetLeft - 16 - 7;
-        this.previewTime = position * secondsPerPixel;
+
+        // get time of mouse position and set preview image time
+        this.previewTime = position * this.secondsPerPixel;
 
         if (this.previewTime < 0) {
             this.previewTime = 0;
@@ -115,54 +175,67 @@ export class VideoComponent implements OnInit, AfterViewChecked {
             this.previewTime = this.duration;
         }
 
+        // get current matrix image; one matrix contains 6 minute of the video
         let curMatrixNr: number = Math.floor(this.previewTime / 360);
 
         if (curMatrixNr < 0) {
             curMatrixNr = 0;
         }
 
-        const lastMatrixNr = Math.floor((this.duration - 30) / 360);
-
-        // this will be handled by sipi; no jpg extension needed
+        // get current matrix file url; TODO: this will be handled by sipi; no jpg extension needed
         const curMatrixFile = 'data/' + this.file + '/matrix/' + this.file + '_m_' + curMatrixNr + '.jpg';
 
-        const matrixWidth: number = Math.round(frameWidth * 6);
-        let matrixHeight: number;
-        let lastFrameNr: number;
-        let lastMatrixLine: number;
-
         // the last matrix file could have another dimension size...
-        if (curMatrixNr < lastMatrixNr) {
-            matrixHeight = Math.round(frameHeight * 6);
+        if (curMatrixNr < this.lastMatrixNr) {
+            this.matrixHeight = Math.round(this.frameHeight * 6);
         } else {
-            lastFrameNr = Math.round((this.duration - 9) / 10);
-            lastMatrixLine = Math.ceil((lastFrameNr - (lastMatrixNr * 36)) / 6);
-            matrixHeight = Math.round(frameHeight * lastMatrixLine);
+            this.matrixHeight = Math.round(this.frameHeight * this.lastMatrixLine);
         }
-        const matrixSize = matrixWidth + 'px ' + matrixHeight + 'px';
+
+        // get current matrix size information
+        const matrixSize = this.matrixWidth + 'px ' + this.matrixHeight + 'px';
 
         let curFrameNr: number = Math.floor(this.previewTime / 10) - Math.floor(36 * curMatrixNr);
         if (curFrameNr < 0) {
             curFrameNr = 0;
         }
-        if (curFrameNr > lastFrameNr) {
-            curFrameNr = lastFrameNr;
+        if (curFrameNr > this.lastFrameNr) {
+            curFrameNr = this.lastFrameNr;
         }
-
+        // calculate current line and columne number in the matrix and get current frame / preview image position
         const curLineNr: number = Math.floor(curFrameNr / 6);
         const curColNr: number = Math.floor(curFrameNr - (curLineNr * 6));
-        const curFramePos: string = '-' + (curColNr * frameWidth) + 'px -' + (curLineNr * frameHeight) + 'px';
+        const curFramePos: string = '-' + (curColNr * this.frameWidth) + 'px -' + (curLineNr * this.frameHeight) + 'px';
 
-        // manipulate css on the fly
+        // manipulate css of preview image on the fly
         this.preview.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
         this.preview.nativeElement.style['background-size'] = matrixSize;
         this.preview.nativeElement.style['background-position'] = curFramePos;
-        this.preview.nativeElement.style['top'] = (this.video.nativeElement.offsetTop + this.video.nativeElement.offsetHeight - frameHeight - 8) + 'px';
-        this.preview.nativeElement.style['left'] = (ev.clientX - Math.floor(frameWidth / 2)) + 'px';
+        this.preview.nativeElement.style['top'] = (this.progress.nativeElement.offsetTop - this.frameHeight - 8) + 'px';
+
+        // position from left:
+        let leftPosition: number = ev.clientX - this.halfFrameWidth;
+        if (leftPosition <= (this.halfFrameWidth)) {
+            leftPosition = this.halfFrameWidth;
+        }
+        if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth)) {
+            leftPosition = this.progressBarWidth - this.halfFrameWidth + 24;
+        }
+        this.preview.nativeElement.style['left'] = leftPosition + 'px';
 
     }
 
+    /**
+     * Show preview image or hide it
+     *
+     * @param  {string} status
+     */
     displayPreview(status: string) {
+        // get size of progress bar / timeline to calculate seconds per pixel
+        this.progressBarWidth = this.progress.nativeElement.offsetWidth - 32 - 16;
+        this.secondsPerPixel = this.duration / this.progressBarWidth;
+
+        // display preview or hide it; depending on mouse event "enter" or "leave" on progress bar / timeline
         this.preview.nativeElement.style['display'] = status;
     }
 

@@ -1,4 +1,4 @@
-<div class="player" kuiDisableContextMenu [class.cinema]="cinemaView">
+<div class="player" kuiDisableContextMenu [class.cinema]="cinemaMode">
     <video
         class="video"
         #video
@@ -8,12 +8,18 @@
         [muted]="muted"
         (click)="togglePlay()"
         (timeupdate)="timeUpdate($event)"
-        (canplaythrough)="statusUpdate($event)"
+        (loadedmetadata)="loadedMetadata($event)"
     ></video>
 
     <!-- <mat-progress-bar class="progress" [value]="(currentTime / duration * 100).toFixed(0)" mode="determinate"
         [bufferValue]="currentBuffer" [color]="'primary'" (click)="goto($event)">
     </mat-progress-bar> -->
+    <!-- preview image -->
+    <div class="preview" #preview>
+        <p class="preview-time">
+            <span class="time">{{ previewTime | kuiTime }}</span>
+        </p>
+    </div>
     <mat-toolbar class="controls">
         <mat-toolbar-row class="progress" #progress>
             <mat-slider
@@ -50,18 +56,11 @@
                     {{ muted ? "muted" : "volume_up" }}
                 </mat-icon>
             </button>
-            <button mat-icon-button (click)="cinemaView = !cinemaView">
+            <button mat-icon-button (click)="toggleCinemaMode()">
                 <mat-icon>{{
-                    cinemaView ? "fullscreen_exit" : "fullscreen"
+                    cinemaMode ? "fullscreen_exit" : "fullscreen"
                 }}</mat-icon>
             </button>
         </mat-toolbar-row>
     </mat-toolbar>
-</div>
-
-<!-- preview image -->
-<div class="preview" #preview>
-    <p class="preview-time">
-        <span class="time">{{ previewTime | kuiTime }}</span>
-    </p>
 </div>
