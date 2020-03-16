@@ -148,15 +148,6 @@ export class VideoComponent implements OnInit {
     }
 
     /**
-     * toggle video size: cinema mode = almost fullscreen vs. normal size
-     */
-    toggleCinemaMode() {
-        this.cinemaMode = !this.cinemaMode;
-        // this.preview.nativeElement.style['top'] = (this.video.nativeElement.offsetTop + this.video.nativeElement.offsetHeight - frameHeight - 8) + 'px';
-        console.log(this.video);
-    }
-
-    /**
      * Show preview image during "mousemove" on progress bar / timeline
      *
      * @param  {MouseEvent} ev
@@ -215,13 +206,26 @@ export class VideoComponent implements OnInit {
 
         // position from left:
         let leftPosition: number = ev.clientX - this.halfFrameWidth;
-        // prevent overflow of preview image on the left
-        if (leftPosition <= (this.halfFrameWidth)) {
-            leftPosition = this.halfFrameWidth;
-        }
-        // prevent overflow of preview image on the right
-        if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth)) {
-            leftPosition = this.progressBarWidth - this.halfFrameWidth + 24;
+
+        if (this.cinemaMode) {
+            //ev.screenX
+            // prevent overflow of preview image on the left
+            if (leftPosition <= 8) {
+                leftPosition = 8;
+            }
+            // prevent overflow of preview image on the right
+            if (leftPosition >= (this.progressBarWidth - this.frameWidth + 32)) {
+                leftPosition = this.progressBarWidth - this.frameWidth + 32;
+            }
+        } else {
+            // prevent overflow of preview image on the left
+            if (leftPosition <= (this.halfFrameWidth)) {
+                leftPosition = this.halfFrameWidth;
+            }
+            // prevent overflow of preview image on the right
+            if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth + 24)) {
+                leftPosition = this.progressBarWidth - this.halfFrameWidth + 24;
+            }
         }
         // set preview positon on x axis
         this.preview.nativeElement.style['left'] = leftPosition + 'px';

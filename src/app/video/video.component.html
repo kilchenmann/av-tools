@@ -56,7 +56,7 @@
                     {{ muted ? "muted" : "volume_up" }}
                 </mat-icon>
             </button>
-            <button mat-icon-button (click)="toggleCinemaMode()">
+            <button mat-icon-button (click)="cinemaMode = !cinemaMode">
                 <mat-icon>{{
                     cinemaMode ? "fullscreen_exit" : "fullscreen"
                 }}</mat-icon>
