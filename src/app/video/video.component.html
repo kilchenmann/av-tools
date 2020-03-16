@@ -9,11 +9,17 @@
         (click)="togglePlay()"
         (timeupdate)="timeUpdate($event)"
         (loadedmetadata)="loadedMetadata($event)"
+        (canplaythrough)="loadedVideo($event)"
     ></video>
 
-    <!-- <mat-progress-bar class="progress" [value]="(currentTime / duration * 100).toFixed(0)" mode="determinate"
-        [bufferValue]="currentBuffer" [color]="'primary'" (click)="goto($event)">
-    </mat-progress-bar> -->
+    <mat-progress-bar
+        class="progress"
+        [value]="currentBuffer"
+        mode="determinate"
+        [color]="'primary'"
+    >
+        <!-- ((currentTime / duration) * 100).toFixed(0) -->
+    </mat-progress-bar>
     <!-- preview image -->
     <div class="preview" #preview>
         <p class="preview-time">
@@ -53,7 +59,7 @@
             <span class="fill-remaining-space"></span>
             <button mat-icon-button (click)="muted = !muted">
                 <mat-icon>
-                    {{ muted ? "muted" : "volume_up" }}
+                    {{ muted ? "volume_mute" : "volume_up" }}
                 </mat-icon>
             </button>
             <button mat-icon-button (click)="cinemaMode = !cinemaMode">
@@ -64,3 +70,6 @@
         </mat-toolbar-row>
     </mat-toolbar>
 </div>
+
+<p>currentBuffer: {{ currentBuffer }}</p>
+<p>currentTime: {{ currentTime }}</p>

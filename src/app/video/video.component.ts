@@ -87,6 +87,19 @@ export class VideoComponent implements OnInit {
 
         // buffer progress
         this.currentBuffer = (this.video.nativeElement.buffered.end(0) / this.duration) * 100;
+
+        let range = 0;
+        let bf = this.video.nativeElement.buffered;
+
+        while (!(bf.start(range) <= this.currentTime && this.currentTime <= bf.end(range))) {
+            range += 1;
+        }
+        let loadStartPercentage = (bf.start(range) / this.duration) * 100;
+        let loadEndPercentage = (bf.end(range) / this.duration) * 100;
+        let loadPercentage = (loadEndPercentage - loadStartPercentage);
+
+        console.log(loadPercentage);
+
     }
 
     /**
@@ -113,6 +126,11 @@ export class VideoComponent implements OnInit {
         // set default volume
         this.video.nativeElement.volume = this.volume;
     }
+
+    loadedVideo(ev: Event) {
+        console.log('video is ready to play');
+    }
+
     /**
      * Video navigation from button (-/+ 10 sec)
      *
