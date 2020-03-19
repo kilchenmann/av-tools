@@ -1,10 +1,20 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import { VideoToolComponent } from './video-tool/video-tool.component';
+import { IndexComponent } from './_helper/index/index.component';
 import { AudioToolComponent } from './audio-tool/audio-tool.component';
+import { VideoToolComponent } from './video-tool/video-tool.component';
 
 const routes: Routes = [
+    {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+    },
+    {
+        path: 'home',
+        component: IndexComponent
+    },
     {
         path: 'audio',
         component: AudioToolComponent

@@ -1,0 +1,25 @@
+<!--     (mouseenter)="preview = !preview"
+    (mouseleave)="preview = !preview" -->
+<div
+    class="flipbook"
+    #flipbook
+    (mousemove)="updatePreview($event.offsetX)"
+    (mouseenter)="toggleFlibbook()"
+    (mouseleave)="toggleFlibbook()"
+    [class.active]="preview"
+>
+    <img [src]="matrix" class="matrix-loader" #matrixEle />
+    <p class="preview-time" *ngIf="preview">
+        <span class="time">{{ previewTime | kuiTime }}</span>
+    </p>
+</div>
+
+<!-- <div
+    class="preview"
+    #preview
+    (mouseenter)="time = !time"
+    (mouseleave)="time = !time"
+>
+
+</div>
+-->

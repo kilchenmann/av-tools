@@ -14,6 +14,8 @@ import { VideoToolComponent } from './video-tool/video-tool.component';
 import { VideoComponent } from './video/video.component';
 import { TimePipe } from './_helper/time.pipe';
 import { DisableContextMenuDirective } from './_helper/disable-context-menu.directive';
+import { VideoPreviewComponent } from './video-preview/video-preview.component';
+import { IndexComponent } from './_helper/index/index.component';
 
 @NgModule({
     declarations: [
@@ -23,7 +25,9 @@ import { DisableContextMenuDirective } from './_helper/disable-context-menu.dire
         VideoToolComponent,
         AudioToolComponent,
         TimePipe,
-        DisableContextMenuDirective
+        DisableContextMenuDirective,
+        VideoPreviewComponent,
+        IndexComponent
     ],
     imports: [
         BrowserModule,

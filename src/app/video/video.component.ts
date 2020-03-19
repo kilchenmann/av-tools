@@ -8,9 +8,9 @@ import { MatSliderChange } from '@angular/material/slider';
 })
 export class VideoComponent implements OnInit {
 
-    @Input() file: string;
+    @Input() video: string;
 
-    @ViewChild('video') video: ElementRef;
+    @ViewChild('video') videoEle: ElementRef;
     @ViewChild('progress') progress: ElementRef;
     @ViewChild('preview') preview: ElementRef;
 
@@ -69,9 +69,9 @@ export class VideoComponent implements OnInit {
         this.play = !this.play;
 
         if (this.play) {
-            this.video.nativeElement.play();
+            this.videoEle.nativeElement.play();
         } else {
-            this.video.nativeElement.pause();
+            this.videoEle.nativeElement.pause();
         }
 
     }
@@ -83,13 +83,13 @@ export class VideoComponent implements OnInit {
      */
     timeUpdate(ev: Event) {
         // current time
-        this.currentTime = this.video.nativeElement.currentTime;
+        this.currentTime = this.videoEle.nativeElement.currentTime;
 
         // buffer progress
-        this.currentBuffer = (this.video.nativeElement.buffered.end(0) / this.duration) * 100;
+        this.currentBuffer = (this.videoEle.nativeElement.buffered.end(0) / this.duration) * 100;
 
         let range = 0;
-        let bf = this.video.nativeElement.buffered;
+        let bf = this.videoEle.nativeElement.buffered;
 
         while (!(bf.start(range) <= this.currentTime && this.currentTime <= bf.end(range))) {
             range += 1;
@@ -110,10 +110,10 @@ export class VideoComponent implements OnInit {
      */
     loadedMetadata(ev: Event) {
         // get video duration
-        this.duration = this.video.nativeElement.duration;
+        this.duration = this.videoEle.nativeElement.duration;
 
         // calculate aspect ratio and set preview image size
-        this.aspectRatio = this.video.nativeElement.videoWidth / this.video.nativeElement.videoHeight;
+        this.aspectRatio = this.videoEle.nativeElement.videoWidth / this.videoEle.nativeElement.videoHeight;
         this.frameHeight = Math.round(this.frameWidth / this.aspectRatio);
         this.preview.nativeElement.style['width'] = this.frameWidth + 'px';
         this.preview.nativeElement.style['height'] = this.frameHeight + 'px';
@@ -124,7 +124,7 @@ export class VideoComponent implements OnInit {
         this.lastMatrixLine = Math.ceil((this.lastFrameNr - (this.lastMatrixNr * 36)) / 6);
 
         // set default volume
-        this.video.nativeElement.volume = this.volume;
+        this.videoEle.nativeElement.volume = this.volume;
     }
 
     loadedVideo(ev: Event) {
@@ -162,7 +162,7 @@ export class VideoComponent implements OnInit {
      */
     private navigate(position: number) {
 
-        this.video.nativeElement.currentTime = position;
+        this.videoEle.nativeElement.currentTime = position;
     }
 
     /**
@@ -192,7 +192,7 @@ export class VideoComponent implements OnInit {
         }
 
         // get current matrix file url; TODO: this will be handled by sipi; no jpg extension needed
-        const curMatrixFile = 'data/' + this.file + '/matrix/' + this.file + '_m_' + curMatrixNr + '.jpg';
+        const curMatrixFile = 'data/' + this.video + '/matrix/' + this.video + '_m_' + curMatrixNr + '.jpg';
 
         // the last matrix file could have another dimension size...
         if (curMatrixNr < this.lastMatrixNr) {

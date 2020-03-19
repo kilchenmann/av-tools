@@ -1,14 +1,18 @@
 <div class="app-container">
-
     <h1 class="mat-headline">App to test the A/V tools</h1>
 
     <mat-toolbar>
-        <button mat-button [routerLink]="'/audio'">
+        <button mat-button routerLink="/home" routerLinkActive="mat-primary">
+            <mat-icon>home</mat-icon>
+            Home
+        </button>
+
+        <button mat-button routerLink="/audio" routerLinkActive="mat-primary">
             <mat-icon>library_music</mat-icon>
             Audio
         </button>
 
-        <button mat-button [routerLink]="'/video'">
+        <button mat-button routerLink="/video" routerLinkActive="mat-primary">
             <mat-icon>video_library</mat-icon>
             Video
         </button>
