@@ -16,12 +16,14 @@ export class IndexComponent implements OnInit {
         {
             name: 'falcon9',
             duration: 242
-
         },
         {
             name: 'fitzcarraldo',
             duration: 9432
-
+        },
+        {
+            name: 'rgb11111',
+            duration: 375
         }
     ]
 

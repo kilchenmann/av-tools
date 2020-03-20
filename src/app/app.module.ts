@@ -19,15 +19,15 @@ import { IndexComponent } from './_helper/index/index.component';
 
 @NgModule({
     declarations: [
+        IndexComponent,
         AppComponent,
-        VideoComponent,
         AudioComponent,
-        VideoToolComponent,
         AudioToolComponent,
-        TimePipe,
-        DisableContextMenuDirective,
+        VideoComponent,
+        VideoToolComponent,
         VideoPreviewComponent,
-        IndexComponent
+        DisableContextMenuDirective,
+        TimePipe
     ],
     imports: [
         BrowserModule,
