@@ -2,6 +2,7 @@
     <div mat-subheader>Videos</div>
     <mat-list-item *ngFor="let item of videos">
         <kui-video-preview
+            [routerLink]="'/video/' + item.name"
             matListAvatar
             [video]="item"
             class="own-preview-style"

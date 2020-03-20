@@ -20,7 +20,7 @@ const routes: Routes = [
         component: AudioToolComponent
     },
     {
-        path: 'video',
+        path: 'video/:name',
         component: VideoToolComponent
     }
 ];

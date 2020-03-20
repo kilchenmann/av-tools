@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'kui-video-tool',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VideoToolComponent implements OnInit {
 
-    video: string = "falcon9";
+    video: string;
 
-    constructor() { }
+    constructor(private _route: ActivatedRoute) {
+        this.video = this._route.snapshot.params['name'];
+    }
 
     ngOnInit(): void {
     }

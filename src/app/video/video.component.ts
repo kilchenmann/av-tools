@@ -8,15 +8,15 @@ import { MatSliderChange } from '@angular/material/slider';
 })
 export class VideoComponent implements OnInit {
 
+    loading: boolean = true;
+
     @Input() video: string;
 
-    @ViewChild('video') videoEle: ElementRef;
+    @ViewChild('videoEle') videoEle: ElementRef;
     @ViewChild('progress') progress: ElementRef;
     @ViewChild('preview') preview: ElementRef;
 
     // video information
-    videoWidth: number = 1280;
-    videoHeight: number;
     aspectRatio: number;
 
     // preview image information
@@ -98,7 +98,7 @@ export class VideoComponent implements OnInit {
         let loadEndPercentage = (bf.end(range) / this.duration) * 100;
         let loadPercentage = (loadEndPercentage - loadStartPercentage);
 
-        console.log(loadPercentage);
+        // console.log(loadPercentage);
 
     }
 
@@ -114,6 +114,7 @@ export class VideoComponent implements OnInit {
 
         // calculate aspect ratio and set preview image size
         this.aspectRatio = this.videoEle.nativeElement.videoWidth / this.videoEle.nativeElement.videoHeight;
+        console.log(this.videoEle.nativeElement.videoHeight);
         this.frameHeight = Math.round(this.frameWidth / this.aspectRatio);
         this.preview.nativeElement.style['width'] = this.frameWidth + 'px';
         this.preview.nativeElement.style['height'] = this.frameHeight + 'px';
@@ -129,6 +130,7 @@ export class VideoComponent implements OnInit {
 
     loadedVideo(ev: Event) {
         console.log('video is ready to play');
+        this.loading = false;
     }
 
     /**

@@ -1,16 +1,18 @@
 <div class="player" kuiDisableContextMenu [class.cinema]="cinemaMode">
-    <video
-        class="video"
-        #video
-        [src]="'data/' + video + '/' + video + '.mp4'"
-        type="video/mp4"
-        preload="auto"
-        [muted]="muted"
-        (click)="togglePlay()"
-        (timeupdate)="timeUpdate($event)"
-        (loadedmetadata)="loadedMetadata($event)"
-        (canplaythrough)="loadedVideo($event)"
-    ></video>
+    <div class="video-container">
+        <video
+            class="video"
+            #videoEle
+            [src]="'data/' + video + '/' + video + '.mp4'"
+            type="video/mp4"
+            preload="auto"
+            [muted]="muted"
+            (click)="togglePlay()"
+            (timeupdate)="timeUpdate($event)"
+            (loadedmetadata)="loadedMetadata($event)"
+            (canplaythrough)="loadedVideo($event)"
+        ></video>
+    </div>
 
     <mat-progress-bar
         class="progress"
@@ -49,7 +51,8 @@
 
             <div (wheel)="updateTimeFromScroll($event)">
                 <p class="mat-body-1 time" (click)="togglePlay()">
-                    {{ currentTime | kuiTime }} / {{ duration | kuiTime }}
+                    {{ currentTime | kuiTime }}
+                    <span *ngIf="!loading">/ {{ duration | kuiTime }}</span>
                 </p>
             </div>
 
