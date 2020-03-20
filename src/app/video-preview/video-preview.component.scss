@@ -14,28 +14,20 @@
   }
 
   .flipbook {
-    height: 100%;
-    width: 100%;
     border-radius: 2px;
     border: 1px solid rgba(28, 28, 28, 0.9);
     background-color: rgba(28, 28, 28, 1);
+    position: relative;
+    background-repeat: no-repeat;
 
     .preview-time {
       display: none;
     }
 
     &.active {
-      height: 144px;
-      width: 256px;
-      top: -25%;
-      left: -31%;
-      position: relative;
       z-index: 99;
-
-      @include box-shadow();
-
       cursor: ew-resize;
-      background-repeat: no-repeat;
+      @include box-shadow();
 
       .preview-time {
         position: absolute;

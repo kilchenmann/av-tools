@@ -1,5 +1,5 @@
-import { animate, style, transition, trigger, state } from '@angular/animations';
-import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild, AfterContentChecked, AfterContentInit, AfterViewInit } from '@angular/core';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
 import { Video } from './../_helper/index/index.component';
 
 @Component({
@@ -7,24 +7,28 @@ import { Video } from './../_helper/index/index.component';
     templateUrl: './video-preview.component.html',
     styleUrls: ['./video-preview.component.scss'],
     animations: [
-        trigger('simpleSearchMenu',
+        trigger('focus',
             [
-                state('inactive', style({ display: 'none' })),
-                state('active', style({ display: 'block' })),
-                transition('inactive => true', animate('100ms ease-in')),
-                transition('true => inactive', animate('100ms ease-out'))
+                state('inactive', style({
+                    width: '100%',
+                    height: '100%',
+                    top: '0',
+                    left: '0',
+                })),
+                state('active', style({
+                    width: '256px',
+                    height: '{{varHeight}}px',
+                    top: '-72px',
+                    left: '-24px'
+                }), { params: { varHeight: 0 } }),
+                transition('* <=> *', [
+                    animate('500ms ease')
+                ])
             ]
-        ),
-        trigger('grow', [
-            transition('void <=> *', []),
-            transition('* <=> *', [
-                style({ height: '{{startHeight}}px', opacity: 0 }),
-                animate('.5s ease'),
-            ], { params: { startHeight: 0 } })
-        ])
+        )
     ]
 })
-export class VideoPreviewComponent implements OnInit, AfterViewInit {
+export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     @Input() video: Video;
 
@@ -32,16 +36,16 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit {
     @ViewChild('flipbook') flipbook: ElementRef;
 
     preview: boolean = false;
+    focusOnPreview: string = 'inactive';
 
     // video information
     aspectRatio: number;
 
-    startHeight: number = 144;
-
     // preview image information
     frameWidth: number = 256;
     halfFrameWidth: number = Math.round(this.frameWidth / 2);
-    frameHeight: number = 144;
+    // default frame height
+    frameHeight: number = 0;
     lastFrameNr: number;
 
     // preview images are organised in matrix files; we'll need the last number of those files
@@ -72,19 +76,28 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit {
         this.matrix = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_0.jpg'
     }
 
+    ngOnChanges() {
+        // console.log('something has changed', this.frameHeight)
+        // this.calculateSizes();
+        // this.frameHeight = this.element.nativeElement.clientHeight;
+    }
+
     ngAfterViewInit() {
         this.calculateSizes();
 
-        this.updatePreview(24);
+        this.updatePreview(42);
 
     }
 
     toggleFlibbook() {
         this.preview = !this.preview;
 
+        this.focusOnPreview = (this.preview ? 'active' : 'inactive');
+
         if (this.preview) {
             this.calculateSizes();
         }
+
     }
 
     calculateSizes() {
@@ -101,19 +114,21 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit {
         const ratio: number = (this.frameWidth * 6) / this.matrixWidth;
 
         // to calculate frame height, we need the aspect ratio
-        this.frameHeight = this.matrixHeight / lines * ratio;
+        if (this.preview && this.focusOnPreview === 'active') {
+            this.frameHeight = Math.round(this.matrixHeight / lines * ratio);
+            // video aspect ratio
+            this.aspectRatio = this.frameWidth / this.frameHeight;
 
-        // video aspect ratio
-        this.aspectRatio = this.frameWidth / this.frameHeight;
-
-        // set correct background size for matrix file
-        this.flipbook.nativeElement.style['background-size'] = this.matrixWidth * ratio + 'px ' + this.matrixHeight * ratio + 'px';
+            // set correct background size for matrix file and flipbook
+            this.flipbook.nativeElement.style['background-size'] = Math.round(this.matrixWidth * ratio) + 'px ' + Math.round(this.matrixHeight * ratio) + 'px';
+        }
     }
 
     updatePreview(position: number) {
 
         // const position: number = ev.offsetX;
 
+        // one frame per 6 pixels
         if (Number.isInteger(position / 6)) {
 
             // calculate seconds per pixel
@@ -148,6 +163,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit {
                 this.lastMatrixLine = Math.ceil((this.lastFrameNr - (this.lastMatrixNr * 36)) / 6);
                 this.matrixHeight = Math.round(this.frameHeight * this.lastMatrixLine);
             }
+
 
             let curFrameNr: number = Math.floor(this.previewTime / 10) - Math.floor(36 * curMatrixNr);
             if (curFrameNr < 0) {

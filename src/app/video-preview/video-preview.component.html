@@ -1,12 +1,14 @@
-<!--     (mouseenter)="preview = !preview"
-    (mouseleave)="preview = !preview" -->
+<!--
+
+-->
 <div
     class="flipbook"
     #flipbook
+    [class.active]="focusOnPreview === 'active'"
+    [@focus]="{ value: focusOnPreview, params: { varHeight: frameHeight } }"
     (mousemove)="updatePreview($event.offsetX)"
     (mouseenter)="toggleFlibbook()"
     (mouseleave)="toggleFlibbook()"
-    [class.active]="preview"
 >
     <img [src]="matrix" class="matrix-loader" #matrixEle />
     <p class="preview-time" *ngIf="preview">
