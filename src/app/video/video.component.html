@@ -1,6 +1,7 @@
 <div class="player" kuiDisableContextMenu [class.cinema]="cinemaMode">
-    <div class="video-container">
+    <div class="container">
         <video
+            autoplay
             class="video"
             #videoEle
             [src]="'data/' + video + '/' + video + '.mp4'"
@@ -12,22 +13,15 @@
             (loadedmetadata)="loadedMetadata($event)"
             (canplaythrough)="loadedVideo($event)"
         ></video>
+
+        <!-- preview image -->
+        <div class="preview" #preview>
+            <p class="preview-time">
+                <span class="time">{{ previewTime | kuiTime }}</span>
+            </p>
+        </div>
     </div>
 
-    <mat-progress-bar
-        class="progress"
-        [value]="currentBuffer"
-        mode="determinate"
-        [color]="'primary'"
-    >
-        <!-- ((currentTime / duration) * 100).toFixed(0) -->
-    </mat-progress-bar>
-    <!-- preview image -->
-    <div class="preview" #preview>
-        <p class="preview-time">
-            <span class="time">{{ previewTime | kuiTime }}</span>
-        </p>
-    </div>
     <mat-toolbar class="controls">
         <mat-toolbar-row class="progress" #progress>
             <mat-slider
@@ -40,7 +34,7 @@
                 (mouseleave)="displayPreview('none')"
             ></mat-slider>
         </mat-toolbar-row>
-        <mat-toolbar-row class="buttons">
+        <mat-toolbar-row class="action">
             <button mat-icon-button (click)="togglePlay()">
                 <mat-icon>{{ play ? "pause" : "play_arrow" }}</mat-icon>
             </button>
@@ -65,13 +59,22 @@
                     {{ muted ? "volume_mute" : "volume_up" }}
                 </mat-icon>
             </button>
-            <button mat-icon-button (click)="cinemaMode = !cinemaMode">
+            <button mat-icon-button (click)="toggleCinemaMode()">
                 <mat-icon>{{
                     cinemaMode ? "fullscreen_exit" : "fullscreen"
                 }}</mat-icon>
             </button>
         </mat-toolbar-row>
     </mat-toolbar>
+
+    <!-- <mat-progress-bar
+        class="progress"
+        [value]="currentBuffer"
+        mode="determinate"
+        [color]="'primary'"
+    >
+        <!-- ((currentTime / duration) * 100).toFixed(0) --
+    </mat-progress-bar> -->
 </div>
 
 <p>currentBuffer: {{ currentBuffer }}</p>

@@ -1,4 +1,5 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { style } from '@angular/animations';
+import { Component, ElementRef, Input, OnInit, ViewChild, OnChanges } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 
 @Component({
@@ -49,13 +50,13 @@ export class VideoComponent implements OnInit {
     play: boolean = false;
 
     // volume
-    volume: number = .5;
+    volume: number = .75;
     muted: boolean = false;
 
     // video player mode
     cinemaMode: boolean = false;
 
-    constructor() { }
+    constructor(private _videoPlayer: ElementRef) { }
 
     ngOnInit(): void {
 
@@ -72,6 +73,20 @@ export class VideoComponent implements OnInit {
             this.videoEle.nativeElement.play();
         } else {
             this.videoEle.nativeElement.pause();
+        }
+
+    }
+
+    toggleCinemaMode() {
+        this.cinemaMode = !this.cinemaMode;
+
+        const containerEle: ElementRef = this.videoEle.nativeElement.parentElement;
+
+        if (this.cinemaMode) {
+            console.log('set height for ', this.videoEle.nativeElement.parentElement.parentElement);
+            console.log('set height', Math.round(window.innerWidth / this.aspectRatio));
+            this.videoEle.nativeElement.parentElement.style['height'] = Math.round(window.innerWidth / this.aspectRatio) + 'px';
+
         }
 
     }
@@ -126,11 +141,14 @@ export class VideoComponent implements OnInit {
 
         // set default volume
         this.videoEle.nativeElement.volume = this.volume;
+
     }
 
     loadedVideo(ev: Event) {
-        console.log('video is ready to play');
         this.loading = false;
+        this.play = !this.videoEle.nativeElement.paused;
+        console.log(this.videoEle);
+        console.log(this.play);
     }
 
     /**
@@ -155,6 +173,7 @@ export class VideoComponent implements OnInit {
      * @param  {WheelEvent} ev
      */
     updateTimeFromScroll(ev: WheelEvent) {
+        ev.preventDefault();
         this.navigate(this.currentTime + (ev.deltaY / 25));
     }
     /**
