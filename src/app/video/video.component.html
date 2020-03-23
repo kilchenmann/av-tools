@@ -1,38 +1,25 @@
 <div class="player" kuiDisableContextMenu [class.cinema]="cinemaMode">
     <div class="container">
-        <video
-            autoplay
-            class="video"
-            #videoEle
-            [src]="'data/' + video + '/' + video + '.mp4'"
-            type="video/mp4"
-            preload="auto"
-            [muted]="muted"
-            (click)="togglePlay()"
-            (timeupdate)="timeUpdate($event)"
-            (loadedmetadata)="loadedMetadata($event)"
-            (canplaythrough)="loadedVideo($event)"
-        ></video>
+        <video class="video" #videoEle [src]="'data/' + video + '/' + video + '.mp4#t=10,20'" type="video/mp4"
+            preload="auto" [muted]="muted" (click)="togglePlay()" (timeupdate)="timeUpdate($event)"
+            (loadedmetadata)="loadedMetadata($event)" (canplaythrough)="loadedVideo($event)">
+        </video>
 
-        <!-- preview image -->
-        <div class="preview" #preview>
-            <p class="preview-time">
-                <span class="time">{{ previewTime | kuiTime }}</span>
-            </p>
+        <div class="preview-line">
+            <!-- preview image -->
+            <div class="preview" #preview>
+                <p class="preview-time">
+                    <span class="time">{{ previewTime | kuiTime }}</span>
+                </p>
+            </div>
         </div>
     </div>
 
     <mat-toolbar class="controls">
         <mat-toolbar-row class="progress" #progress>
-            <mat-slider
-                [value]="currentTime"
-                [max]="duration"
-                [min]="0"
-                (input)="updateTimeFromSlider($event)"
-                (mousemove)="updatePreview($event)"
-                (mouseenter)="displayPreview('block')"
-                (mouseleave)="displayPreview('none')"
-            ></mat-slider>
+            <mat-slider [value]="currentTime" [max]="duration" [min]="0" (input)="updateTimeFromSlider($event)"
+                (mousemove)="updatePreview($event)" (mouseenter)="displayPreview('block')"
+                (mouseleave)="displayPreview('none')"></mat-slider>
         </mat-toolbar-row>
         <mat-toolbar-row class="action">
             <button mat-icon-button (click)="togglePlay()">

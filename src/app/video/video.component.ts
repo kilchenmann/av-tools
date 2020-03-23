@@ -54,7 +54,7 @@ export class VideoComponent implements OnInit {
     muted: boolean = false;
 
     // video player mode
-    cinemaMode: boolean = false;
+    cinemaMode: boolean = true;
 
     constructor(private _videoPlayer: ElementRef) { }
 
@@ -79,16 +79,6 @@ export class VideoComponent implements OnInit {
 
     toggleCinemaMode() {
         this.cinemaMode = !this.cinemaMode;
-
-        const containerEle: ElementRef = this.videoEle.nativeElement.parentElement;
-
-        if (this.cinemaMode) {
-            console.log('set height for ', this.videoEle.nativeElement.parentElement.parentElement);
-            console.log('set height', Math.round(window.innerWidth / this.aspectRatio));
-            this.videoEle.nativeElement.parentElement.style['height'] = Math.round(window.innerWidth / this.aspectRatio) + 'px';
-
-        }
-
     }
 
     /**
@@ -241,7 +231,7 @@ export class VideoComponent implements OnInit {
         this.preview.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
         this.preview.nativeElement.style['background-size'] = matrixSize;
         this.preview.nativeElement.style['background-position'] = curFramePos;
-        this.preview.nativeElement.style['top'] = (this.progress.nativeElement.offsetTop - this.frameHeight - 8) + 'px';
+        // this.preview.nativeElement.style['top'] = (this.progress.nativeElement.offsetTop - this.frameHeight - 8) + 'px';
 
         // position from left:
         let leftPosition: number = ev.clientX - this.halfFrameWidth;
