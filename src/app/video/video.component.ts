@@ -1,6 +1,6 @@
 import { style } from '@angular/animations';
-import { Component, ElementRef, Input, OnInit, ViewChild, OnChanges } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
+import { MatSlider, MatSliderChange } from '@angular/material/slider';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'kui-video',
@@ -14,6 +14,7 @@ export class VideoComponent implements OnInit {
     @Input() video: string;
 
     @ViewChild('videoEle') videoEle: ElementRef;
+    @ViewChild('timeline') timeline: ElementRef;
     @ViewChild('progress') progress: ElementRef;
     @ViewChild('preview') preview: ElementRef;
 
@@ -38,7 +39,7 @@ export class VideoComponent implements OnInit {
     // time information
     duration: number;
     currentTime: number = 0;
-    previewTime: number;
+    previewTime: number = 0;
 
     // seconds per pixel to calculate preview image on timeline
     secondsPerPixel: number;
@@ -51,10 +52,10 @@ export class VideoComponent implements OnInit {
 
     // volume
     volume: number = .75;
-    muted: boolean = false;
+    muted: boolean = true;
 
     // video player mode
-    cinemaMode: boolean = true;
+    cinemaMode: boolean = false;
 
     constructor(private _videoPlayer: ElementRef) { }
 
@@ -105,6 +106,10 @@ export class VideoComponent implements OnInit {
 
         // console.log(loadPercentage);
 
+        // console.log('position', (this.currentTime / this.secondsPerPixel))
+
+        // this.updatePosition(Math.round(this.currentTime / this.secondsPerPixel));
+
     }
 
     /**
@@ -154,8 +159,8 @@ export class VideoComponent implements OnInit {
      *
      * @param  {MatSliderChange} ev
      */
-    updateTimeFromSlider(ev: MatSliderChange) {
-        this.navigate(ev.value);
+    updateTimeFromSlider(time: number) {
+        this.navigate(time);
     }
     /**
      * Video navigation from scroll event
@@ -176,24 +181,70 @@ export class VideoComponent implements OnInit {
         this.videoEle.nativeElement.currentTime = position;
     }
 
+    calcPreviewTime(ev: MouseEvent) {
+        this.previewTime = Math.round((ev.offsetX / this.timeline.nativeElement.clientWidth) * this.duration);
+        this.previewTime = this.previewTime > this.duration ? this.duration : this.previewTime;
+        this.previewTime = this.previewTime < 0 ? 0 : this.previewTime;
+    }
+
+    mouseMove(ev: MouseEvent) {
+        this.calcPreviewTime(ev);
+        // console.log('mouse move on', this.previewTime)
+    }
+
+
+
+
+
+    sliderChange(ev: Event) {
+        console.log(ev);
+        // const valueSeeked: number = parseInt(ev.target.value);
+
+        // if (this.previewTime === valueSeeked) {
+        //     console.log('preview time and slider value are correct')
+        // } else {
+
+        //     console.log('time: ', this.previewTime + ' === ' + valueSeeked + ' : ' + (this.previewTime === valueSeeked))
+        // }
+
+
+    }
+
     /**
      * Show preview image during "mousemove" on progress bar / timeline
      *
      * @param  {MouseEvent} ev
      */
     updatePreview(ev: MouseEvent) {
+
+        // console.log('------------------------------------');
+        // console.log('mousemove', (ev.offsetX / this.progress.nativeElement.clientWidth) * this.duration);
+
+        // console.log(this.progress)
+
+        // console.log('UpdatePreview ----------------------');
         // mouse position
-        const position: number = ev.clientX - this.progress.nativeElement.offsetLeft - 16 - 7;
+        // const position: number = ev.offsetX;
+        // clientX - this.progress._elementRef.nativeElement.offsetLeft;
+        // console.log('mouse offset X', ev.offsetX);
+        // console.log('progressEle', this.progress);
+        // console.log('mouse ev', ev);
+        // console.log('clientX', ev.clientX);
+        // console.log('offsetLeft', this.progress._elementRef.nativeElement.offsetLeft);
+
 
         // get time of mouse position and set preview image time
-        this.previewTime = position * this.secondsPerPixel;
+        // this.previewTime = Math.round(position * this.secondsPerPixel);
+        // if (this.previewTime < 0) {
+        //     this.previewTime = 0;
+        // }
+        // if (this.previewTime > this.duration) {
+        //     this.previewTime = this.duration;
+        // }
 
-        if (this.previewTime < 0) {
-            this.previewTime = 0;
-        }
-        if (this.previewTime > this.duration) {
-            this.previewTime = this.duration;
-        }
+        this.calcPreviewTime(ev);
+
+        // console.log('preview time', this.previewTime);
 
         // get current matrix image; one matrix contains 6 minute of the video
         let curMatrixNr: number = Math.floor(this.previewTime / 360);
@@ -252,8 +303,9 @@ export class VideoComponent implements OnInit {
                 leftPosition = this.halfFrameWidth;
             }
             // prevent overflow of preview image on the right
-            if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth + 24)) {
-                leftPosition = this.progressBarWidth - this.halfFrameWidth + 24;
+            if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth + 48)) {
+                console.log(leftPosition);
+                leftPosition = this.progressBarWidth - this.halfFrameWidth + 48;
             }
         }
         // set preview positon on x axis
@@ -268,8 +320,11 @@ export class VideoComponent implements OnInit {
      */
     displayPreview(status: string) {
         // get size of progress bar / timeline to calculate seconds per pixel
-        this.progressBarWidth = this.progress.nativeElement.offsetWidth - 32 - 16;
+        this.progressBarWidth = this.progress.nativeElement.offsetWidth;
+        // console.log('progressBarWidth', this.progressBarWidth);
         this.secondsPerPixel = this.duration / this.progressBarWidth;
+
+        console.log(this.secondsPerPixel);
 
         // display preview or hide it; depending on mouse event "enter" or "leave" on progress bar / timeline
         this.preview.nativeElement.style['display'] = status;

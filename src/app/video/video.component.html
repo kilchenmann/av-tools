@@ -1,6 +1,6 @@
 <div class="player" kuiDisableContextMenu [class.cinema]="cinemaMode">
     <div class="container">
-        <video class="video" #videoEle [src]="'data/' + video + '/' + video + '.mp4#t=10,20'" type="video/mp4"
+        <video class="video" #videoEle [src]="'data/' + video + '/' + video + '.mp4#t=10'" type="video/mp4"
             preload="auto" [muted]="muted" (click)="togglePlay()" (timeupdate)="timeUpdate($event)"
             (loadedmetadata)="loadedMetadata($event)" (canplaythrough)="loadedVideo($event)">
         </video>
@@ -16,11 +16,18 @@
     </div>
 
     <mat-toolbar class="controls">
-        <mat-toolbar-row class="progress" #progress>
-            <mat-slider [value]="currentTime" [max]="duration" [min]="0" (input)="updateTimeFromSlider($event)"
-                (mousemove)="updatePreview($event)" (mouseenter)="displayPreview('block')"
-                (mouseleave)="displayPreview('none')"></mat-slider>
+        <mat-toolbar-row>
+            <kui-av-timeline #timeline [value]="currentTime" [min]="0" [max]="duration"
+                (change)="updateTimeFromSlider($event)"></kui-av-timeline>
         </mat-toolbar-row>
+        <!-- <mat-toolbar-row>
+            <input class="progress" type="range" [value]="currentTime" min="0" [max]="duration" [step]="0.04">
+        </mat-toolbar-row>
+        <mat-toolbar-row>
+            <mat-slider class="progress" [value]="currentTime" [min]="0" [max]="duration"
+                (mousemove)="updatePreview($event)" (mouseenter)="displayPreview('block')"
+                (mouseleave)="displayPreview('none')" (mouseup)="sliderChange($event)"></mat-slider>
+        </mat-toolbar-row> -->
         <mat-toolbar-row class="action">
             <button mat-icon-button (click)="togglePlay()">
                 <mat-icon>{{ play ? "pause" : "play_arrow" }}</mat-icon>
