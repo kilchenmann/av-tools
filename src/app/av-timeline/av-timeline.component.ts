@@ -1,5 +1,9 @@
-import { style } from '@angular/animations';
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, OnChanges } from '@angular/core';
+
+export interface pointerValue {
+    position: number;
+    time: number;
+}
 
 @Component({
     selector: 'kui-av-timeline',
@@ -11,10 +15,11 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef }
         '(keydown)': '_onKeydown($event)',
         '(keyup)': '_onKeyup()',
         '(mouseenter)': '_onMouseenter()',
-        '(mousemove)': '_onMousemove()'
+        '(mousemove)': '_onMousemove($event)',
+        '(mouseup)': '_onMouseup($event)'
     }
 })
-export class AvTimelineComponent implements OnInit {
+export class AvTimelineComponent implements OnInit, OnChanges {
 
     @Input() value?: number;
     @Input() min?: number = 0;
@@ -24,13 +29,11 @@ export class AvTimelineComponent implements OnInit {
     @Output() change = new EventEmitter<number>();
 
     // send mouse position value to parent
-    @Output() move = new EventEmitter<number>();
-
+    @Output() move = new EventEmitter<pointerValue>();
 
     @ViewChild('timeline') _timeline: ElementRef;
     @ViewChild('progress') _progress: ElementRef;
     @ViewChild('thumb') _thumb: ElementRef;
-
 
     timelineDimension: ClientRect | null = null;
 
@@ -39,31 +42,65 @@ export class AvTimelineComponent implements OnInit {
     ngOnInit(): void {
     }
 
+    ngOnChanges() {
+        if (!this._timeline && !this._progress) {
+            return;
+        }
+
+        if (!this.timelineDimension) {
+            this.timelineDimension = this.getTimelineDimensions();
+        }
+
+        this.updateThumbPosition(this.value);
+    }
+
     _onMouseenter() {
         this.timelineDimension = this.getTimelineDimensions();
-        console.log(this.timelineDimension);
     }
-    _onMousemove() {
+    _onMousemove(ev: MouseEvent) {
+        const pos: number = ((ev.clientX - this.timelineDimension.left) / this.timelineDimension.width);
+
+        let time: number = (pos * this.max);
+
+        if (time < 0) {
+            time = 0;
+        } else if (time > this.max) {
+            time = this.max;
+        }
+
+        this.move.emit({ position: ev.clientX, time: time })
         // console.log(this.timeline);
         // this._getSliderDimensions();
     }
 
+    updateThumbPosition(time: number) {
+        // calc position on the x axis from time value
+        const percent: number = (time / this.max);
+        // this.timelineDimension = this.getTimelineDimensions();
+        // console.log(this.timelineDimension);
+        const pos: number = this.timelineDimension.width * percent;
+
+        this.updatePosition(pos);
+
+    }
+
     /**
- * Get the bounding client rect of the slider track element.
- * The track is used rather than the native element to ignore the extra space that the thumb can
- * take up.
- */
+     * Get the bounding client rect of the slider track element.
+     * The track is used rather than the native element to ignore the extra space that the thumb can
+     * take up.
+     */
     private getTimelineDimensions() {
         return this._timeline ? this._timeline.nativeElement.getBoundingClientRect() : null;
     }
 
 
-    updatePosition(ev: MouseEvent) {
+    updatePosition(posX: number) {
 
-        const pos: number = (ev.clientX - this.timelineDimension.left);
+        const pos: number = (posX); // - this.timelineDimension.left);
 
         // already played time
         const fillPos = (pos / this.timelineDimension.width);
+
         // background start position
         const bgPos = (1 - fillPos);
 
@@ -73,13 +110,15 @@ export class AvTimelineComponent implements OnInit {
         this._progress.nativeElement.children[2].style['transform'] = 'translateX(0px) scale3d(' + fillPos + ', 1, 1)';
 
         this._thumb.nativeElement.style['transform'] = 'translateX(' + pos + 'px)';
-        // lastChild.style['transform'] = 'translateX(' + pos + 'px)';
-        // this.progress.nativeElement.firstChild.style['width'] = '100%';
-        // this.progress.nativeElement.firstChild.style['transform'] = 'translateX(0px) scale3d(' + posInPercent + ', 1, 1)';
+
+    }
+
+    _onMouseup(ev: MouseEvent) {
+
+        const pos: number = ((ev.clientX - this.timelineDimension.left) / this.timelineDimension.width);
 
         // calc time value to submit to parent
-        const time: number = (fillPos * this.max);
-        console.log('update', time);
+        const time: number = (pos * this.max);
         this.change.emit(time)
     }
 

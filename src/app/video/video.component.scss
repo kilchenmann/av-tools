@@ -24,8 +24,10 @@
 
     .preview-line {
       width: 100%;
+      width: calc(100% - 16px);
       position: absolute;
       bottom: 0;
+      margin: 0 8px;
 
       .preview {
         position: sticky;

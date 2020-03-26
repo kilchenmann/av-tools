@@ -1,6 +1,6 @@
-import { style } from '@angular/animations';
-import { MatSlider, MatSliderChange } from '@angular/material/slider';
+import { pointerValue } from './../av-timeline/av-timeline.component';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { MatSliderChange } from '@angular/material/slider';
 
 @Component({
     selector: 'kui-video',
@@ -215,7 +215,10 @@ export class VideoComponent implements OnInit {
      *
      * @param  {MouseEvent} ev
      */
-    updatePreview(ev: MouseEvent) {
+    updatePreview(ev: pointerValue) {
+        // console.log('update preview with', ev);
+
+        this.previewTime = ev.time;
 
         // console.log('------------------------------------');
         // console.log('mousemove', (ev.offsetX / this.progress.nativeElement.clientWidth) * this.duration);
@@ -242,7 +245,7 @@ export class VideoComponent implements OnInit {
         //     this.previewTime = this.duration;
         // }
 
-        this.calcPreviewTime(ev);
+        // this.calcPreviewTime(ev);
 
         // console.log('preview time', this.previewTime);
 
@@ -285,7 +288,9 @@ export class VideoComponent implements OnInit {
         // this.preview.nativeElement.style['top'] = (this.progress.nativeElement.offsetTop - this.frameHeight - 8) + 'px';
 
         // position from left:
-        let leftPosition: number = ev.clientX - this.halfFrameWidth;
+
+        let leftPosition: number = ev.position - this.halfFrameWidth;
+        // console.log('left position of preview', leftPosition);
 
         if (this.cinemaMode) {
             //ev.screenX
@@ -311,6 +316,7 @@ export class VideoComponent implements OnInit {
         // set preview positon on x axis
         this.preview.nativeElement.style['left'] = leftPosition + 'px';
 
+
     }
 
     /**
@@ -319,10 +325,11 @@ export class VideoComponent implements OnInit {
      * @param  {string} status
      */
     displayPreview(status: string) {
+        console.log(status);
         // get size of progress bar / timeline to calculate seconds per pixel
-        this.progressBarWidth = this.progress.nativeElement.offsetWidth;
+        // this.progressBarWidth = this.progress.nativeElement.offsetWidth;
         // console.log('progressBarWidth', this.progressBarWidth);
-        this.secondsPerPixel = this.duration / this.progressBarWidth;
+        // this.secondsPerPixel = this.duration / this.progressBarWidth;
 
         console.log(this.secondsPerPixel);
 

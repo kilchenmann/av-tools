@@ -17,7 +17,8 @@
 
     <mat-toolbar class="controls">
         <mat-toolbar-row>
-            <kui-av-timeline #timeline [value]="currentTime" [min]="0" [max]="duration"
+            <kui-av-timeline #timeline [value]="currentTime" [min]="0" [max]="duration" (move)="updatePreview($event)"
+                (mouseenter)="displayPreview('block')" (mouseleave)="displayPreview('none')"
                 (change)="updateTimeFromSlider($event)"></kui-av-timeline>
         </mat-toolbar-row>
         <!-- <mat-toolbar-row>
