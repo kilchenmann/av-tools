@@ -48,7 +48,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     frameHeight: number = 0;
     lastFrameNr: number;
 
-    // preview images are organised in matrix files; we'll need the last number of those files
+    // preview images are organized in matrix files; we'll need the last number of those files
     matrix: string;
     matrixWidth: number = Math.round(this.frameWidth * 6);
     matrixHeight: number;

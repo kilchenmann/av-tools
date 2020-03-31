@@ -53,6 +53,11 @@
     transition: transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1),
       background-color 400ms cubic-bezier(0.25, 0.8, 0.25, 1),
       border-color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    &:active {
+      cursor: grabbing;
+      transform: scale(1);
+    }
   }
 }
 
@@ -93,10 +98,5 @@
       background-color 400ms cubic-bezier(0.25, 0.8, 0.25, 1),
       border-color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: grab;
-
-    &:active {
-      cursor: grabbing;
-      transform: scale(1);
-    }
   }
 }

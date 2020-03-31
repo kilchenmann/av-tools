@@ -4,8 +4,12 @@
   margin: 0 auto;
   display: block;
 
+  .mat-list-item {
+    margin: 24px 0;
+  }
+
   .own-preview-style {
-    width: 72px !important;
-    height: 40px;
+    // width: 72px !important;
+    // height: 40px;
   }
 }

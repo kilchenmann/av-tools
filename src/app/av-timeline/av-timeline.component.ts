@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, OnChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, SimpleChange, Renderer2 } from '@angular/core';
 
 export interface pointerValue {
     position: number;
@@ -14,49 +14,76 @@ export interface pointerValue {
         '(blur)': '_onBlur()',
         '(keydown)': '_onKeydown($event)',
         '(keyup)': '_onKeyup()',
-        '(mouseenter)': '_onMouseenter()',
+        '(mouseenter)': '_onMouseenter($event)',
         '(mousemove)': '_onMousemove($event)',
-        '(mouseup)': '_onMouseup($event)'
+        '(mousedown)': '_onMousemove($event)',
+        '(mouseup)': '_onMouseup($event)',
+        '(window:resize)': '_onWindowResize($event)'
     }
 })
 export class AvTimelineComponent implements OnInit, OnChanges {
 
-    @Input() value?: number;
+    /** current time value */
+    @Input() value: number;
+
+    /** start time value */
     @Input() min?: number = 0;
+
+    /** end time value: Normally this is the duration */
     @Input() max: number;
 
-    // send click position value to parent
+    /** in case parent resized: Will be used in video player when changed view mode to cinema and return  */
+    @Input() resized: boolean;
+
+    /** send click position to parent */
     @Output() change = new EventEmitter<number>();
 
-    // send mouse position value to parent
+    /** send mouse position to parent */
     @Output() move = new EventEmitter<pointerValue>();
 
+    /** timeline element: main container */
     @ViewChild('timeline') _timeline: ElementRef;
+    /** progress element: thin bar line */
     @ViewChild('progress') _progress: ElementRef;
+    /** thumb element: current postion pointer */
     @ViewChild('thumb') _thumb: ElementRef;
 
+    /** size of timeline; will be used to calculate progress position in pixel corresponding to time value */
     timelineDimension: ClientRect | null = null;
 
-    constructor() { }
+    // dragEvent: any;
+    // dragging: (event: any) => void;
+
+    constructor(private _renderer: Renderer2) {
+        // this.dragging = this.unboundDragging.bind(this);
+    }
 
     ngOnInit(): void {
     }
 
-    ngOnChanges() {
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
         if (!this._timeline && !this._progress) {
             return;
         }
 
         if (!this.timelineDimension) {
+            // calculate timeline dimension if it doesn't exist
             this.timelineDimension = this.getTimelineDimensions();
+        } else {
+            // recalculate timeline dimension because resized parameter has changed
+            if (changes['resized']) {
+                this.timelineDimension = this.getResizedTimelineDimensions();
+            }
         }
 
+        // update pointer position
         this.updateThumbPosition(this.value);
     }
-
-    _onMouseenter() {
+    /** mouse enters the timeline */
+    _onMouseenter(ev: MouseEvent) {
         this.timelineDimension = this.getTimelineDimensions();
     }
+    /** mouse leaves the timeline */
     _onMousemove(ev: MouseEvent) {
         const pos: number = ((ev.clientX - this.timelineDimension.left) / this.timelineDimension.width);
 
@@ -69,8 +96,12 @@ export class AvTimelineComponent implements OnInit, OnChanges {
         }
 
         this.move.emit({ position: ev.clientX, time: time })
-        // console.log(this.timeline);
-        // this._getSliderDimensions();
+    }
+
+    /** event listener on window resize */
+    _onWindowResize(ev: Event) {
+        this.timelineDimension = this.getResizedTimelineDimensions();
+        console.log('updated?', this.timelineDimension);
     }
 
     updateThumbPosition(time: number) {
@@ -89,14 +120,26 @@ export class AvTimelineComponent implements OnInit, OnChanges {
      * The track is used rather than the native element to ignore the extra space that the thumb can
      * take up.
      */
-    private getTimelineDimensions() {
+    private getTimelineDimensions(): ClientRect | null {
         return this._timeline ? this._timeline.nativeElement.getBoundingClientRect() : null;
     }
 
+    private getResizedTimelineDimensions(): ClientRect | null {
+        // recalculate timeline dimension
+        let newDimension: ClientRect = this.getTimelineDimensions();
 
-    updatePosition(posX: number) {
+        if (this.timelineDimension.width !== newDimension.width) {
+            return newDimension;
+        } else {
+            return;
+        }
 
-        const pos: number = (posX); // - this.timelineDimension.left);
+    }
+
+
+    updatePosition(pos: number) {
+
+        // const pos: number = (posX); // - this.timelineDimension.left);
 
         // already played time
         const fillPos = (pos / this.timelineDimension.width);
@@ -104,12 +147,61 @@ export class AvTimelineComponent implements OnInit, OnChanges {
         // background start position
         const bgPos = (1 - fillPos);
 
+
+        this._thumb.nativeElement.style['transform'] = 'translateX(' + pos + 'px) scale(.7)';
+
         // adjust progress width / fill already played time
         this._progress.nativeElement.children[0].style['transform'] = 'translateX(0px) scale3d(' + bgPos + ', 1, 1)';
         // adjust progress width / progress background
         this._progress.nativeElement.children[2].style['transform'] = 'translateX(0px) scale3d(' + fillPos + ', 1, 1)';
 
-        this._thumb.nativeElement.style['transform'] = 'translateX(' + pos + 'px)';
+
+    }
+
+    dragStart(ev: DragEvent) {
+
+        console.log('dragStart', ev);
+    }
+    //     ev.preventDefault();
+    //     console.log(ev);
+
+    //     let posX: number;
+
+    //     if (ev.type == 'touchstart') {
+    //         // posX = ev.touches[0].clientX;
+    //     } else {
+    //         posX = ev.clientX;
+    //         // console.log(this._onMousemove);
+    //         if (this.dragEvent) {
+    //             this.dragEvent();
+    //         }
+
+    //         this.dragEvent = this._renderer.listen('host', 'mousemove', this.dragging);
+
+    //         console.log(this.dragEvent);
+    //         // this._onMousemove(ev);
+    //         // if (this._onMousemove) {
+    //         //     console.log('drag n move');
+    //         // }
+    //         // if (this._onMouseup) {
+    //         //     console.log('drag end')
+    //         // }
+    //     }
+
+    // }
+
+    dragAction(ev: DragEvent) {
+        console.log('dragAction', ev);
+        this.updatePosition(ev.clientX);
+
+        this.change.emit
+
+    }
+
+    dragEnd(ev: DragEvent) {
+
+        console.log('dragEnd', ev);
+
 
     }
 
@@ -137,5 +229,11 @@ export class AvTimelineComponent implements OnInit, OnChanges {
         // console.log('mouse up on', this.previewTime)
         // this.navigate(this.previewTime);
     }
+
+    // unboundDragging(event: MouseEvent) {
+    //     console.log('unboundDragging ', event)
+    //     // const pos = this.xStartElementPoint + (event.pageX - this.xStartMousePoint);
+    //     // this.curY = this.yStartElementPoint + (event.pageY - this.yStartMousePoint);
+    // }
 
 }

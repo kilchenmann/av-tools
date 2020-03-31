@@ -124,7 +124,7 @@ export class VideoComponent implements OnInit {
 
         // calculate aspect ratio and set preview image size
         this.aspectRatio = this.videoEle.nativeElement.videoWidth / this.videoEle.nativeElement.videoHeight;
-        console.log(this.videoEle.nativeElement.videoHeight);
+
         this.frameHeight = Math.round(this.frameWidth / this.aspectRatio);
         this.preview.nativeElement.style['width'] = this.frameWidth + 'px';
         this.preview.nativeElement.style['height'] = this.frameHeight + 'px';
@@ -142,8 +142,7 @@ export class VideoComponent implements OnInit {
     loadedVideo(ev: Event) {
         this.loading = false;
         this.play = !this.videoEle.nativeElement.paused;
-        console.log(this.videoEle);
-        console.log(this.play);
+        // console.log(this.videoEle);
     }
 
     /**
@@ -197,7 +196,7 @@ export class VideoComponent implements OnInit {
 
 
     sliderChange(ev: Event) {
-        console.log(ev);
+        // console.log(ev);
         // const valueSeeked: number = parseInt(ev.target.value);
 
         // if (this.previewTime === valueSeeked) {
@@ -309,7 +308,6 @@ export class VideoComponent implements OnInit {
             }
             // prevent overflow of preview image on the right
             if (leftPosition >= (this.progressBarWidth - this.halfFrameWidth + 48)) {
-                console.log(leftPosition);
                 leftPosition = this.progressBarWidth - this.halfFrameWidth + 48;
             }
         }
@@ -325,13 +323,12 @@ export class VideoComponent implements OnInit {
      * @param  {string} status
      */
     displayPreview(status: string) {
-        console.log(status);
+
         // get size of progress bar / timeline to calculate seconds per pixel
         // this.progressBarWidth = this.progress.nativeElement.offsetWidth;
         // console.log('progressBarWidth', this.progressBarWidth);
         // this.secondsPerPixel = this.duration / this.progressBarWidth;
 
-        console.log(this.secondsPerPixel);
 
         // display preview or hide it; depending on mouse event "enter" or "leave" on progress bar / timeline
         this.preview.nativeElement.style['display'] = status;

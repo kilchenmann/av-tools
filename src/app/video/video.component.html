@@ -16,10 +16,10 @@
     </div>
 
     <mat-toolbar class="controls">
-        <mat-toolbar-row>
-            <kui-av-timeline #timeline [value]="currentTime" [min]="0" [max]="duration" (move)="updatePreview($event)"
-                (mouseenter)="displayPreview('block')" (mouseleave)="displayPreview('none')"
-                (change)="updateTimeFromSlider($event)"></kui-av-timeline>
+        <mat-toolbar-row style="overflow: hidden;">
+            <kui-av-timeline #timeline [value]="currentTime" [min]="0" [max]="duration" [resized]="cinemaMode"
+                (move)="updatePreview($event)" (mouseenter)="displayPreview('block')"
+                (mouseleave)="displayPreview('none')" (change)="updateTimeFromSlider($event)"></kui-av-timeline>
         </mat-toolbar-row>
         <!-- <mat-toolbar-row>
             <input class="progress" type="range" [value]="currentTime" min="0" [max]="duration" [step]="0.04">
