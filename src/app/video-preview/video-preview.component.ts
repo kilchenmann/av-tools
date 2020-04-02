@@ -32,8 +32,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     @Input() video: Video;
 
-    @ViewChild('matrixEle') matrixEle: ElementRef;
-    @ViewChild('flipbook') flipbook: ElementRef;
+    // @ViewChild('matrixEle') matrixEle: ElementRef;
+    // @ViewChild('flipbook') flipbook: ElementRef;
 
     preview: boolean = false;
     focusOnPreview: string = 'inactive';
@@ -104,8 +104,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
         // get width and height of matrix file
         // if duration > 60s
         // if duration >= 360s (first matrix has full size)
-        this.matrixWidth = this.matrixEle.nativeElement.width;
-        this.matrixHeight = this.matrixEle.nativeElement.height;
+        // this.matrixWidth = this.matrixEle.nativeElement.width;
+        // this.matrixHeight = this.matrixEle.nativeElement.height;
 
         // how many lines does the matrix have? in case of smaller matrix files (duration < 360) the first matrix doesn't have 6 lines
         const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
@@ -120,7 +120,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             this.aspectRatio = this.frameWidth / this.frameHeight;
 
             // set correct background size for matrix file and flipbook
-            this.flipbook.nativeElement.style['background-size'] = Math.round(this.matrixWidth * ratio) + 'px ' + Math.round(this.matrixHeight * ratio) + 'px';
+            // this.flipbook.nativeElement.style['background-size'] = Math.round(this.matrixWidth * ratio) + 'px ' + Math.round(this.matrixHeight * ratio) + 'px';
         }
     }
 
@@ -179,8 +179,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             const curFramePos: string = '-' + (curColNr * this.frameWidth) + 'px -' + (curLineNr * this.frameHeight) + 'px';
 
             // manipulate css of preview image on the fly
-            this.flipbook.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
-            this.flipbook.nativeElement.style['background-position'] = curFramePos;
+            // this.flipbook.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
+            // this.flipbook.nativeElement.style['background-position'] = curFramePos;
         }
 
 
