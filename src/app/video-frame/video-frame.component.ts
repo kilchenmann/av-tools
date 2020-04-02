@@ -4,28 +4,27 @@ import { Video } from './../_helper/index/index.component';
 @Component({
     selector: 'kui-video-frame',
     templateUrl: './video-frame.component.html',
-    styleUrls: ['./video-frame.component.scss']
+    styleUrls: ['./video-frame.component.scss'],
+    host: {
+        '(mouseenter)': '_onMouseenter($event)',
+        '(mouseleave)': '_onMouseleave($event)',
+        '(mousemove)': 'updateFrame($event.offsetX)'
+    }
 })
 export class VideoFrameComponent implements OnInit {
 
-    loading: boolean = false;
-
     @Input() video: Video;
-    @Input() value: number;
+    @Input() value?: number;
+
+    currentTime: number;
 
     matrix: string;
     matrixWidth: number;
     matrixHeight: number;
+    lastMatrixNr: number;
+    lastMatrixLine: number;
 
-    currentTime: number;
-
-    // video information
-    aspectRatio: number;
-
-    // preview image information
     frameWidth: number;
-    halfFrameWidth: number = Math.round(this.frameWidth / 2);
-    // default frame height
     frameHeight: number;
     lastFrameNr: number;
 
@@ -37,45 +36,15 @@ export class VideoFrameComponent implements OnInit {
 
     ngOnInit(): void {
 
-        this.loading = true;
-
-        // init frame at position 5 seconds
         this.currentTime = (this.value ? this.value : 5);
 
         // read first matrix file
         this.matrix = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_0.jpg';
 
+        // and calculate frame size with correct aspect ratio
         this.calculateSizes(this.matrix);
 
-        // this.getMatrixDimension(this.matrix)
-        //     .then(img => {
-        //         // this.calculateSizes(this.naturalWidth, img.naturalHeight);
-        //         // console.log(img.naturalWidth);
-        //         // this.loading = false;
-        //     })
-        //     .catch(err => console.error(err));
-
-        // console.log(this._host);
-        // console.log(this._host.nativeElement.offsetWidth, this._host.nativeElement.offsetHeight);
-
-
         this._host.nativeElement.firstElementChild.style['background-image'] = 'url(' + this.matrix + ')';
-
-    }
-
-
-
-    getMatrixDimension(url: string) {
-
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.src = url;
-            img.addEventListener('load', () => {
-                resolve(img)
-                // this.calculateSizes(img.width, img.height);
-            });
-            img.addEventListener('error', err => reject(err));
-        });
 
     }
 
@@ -86,15 +55,15 @@ export class VideoFrameComponent implements OnInit {
 
         img.addEventListener('load', () => {
             // matrix dimension is:
-            const matrixWidth: number = img.naturalWidth;
-            const matrixHeight: number = img.naturalHeight;
+            this.matrixWidth = img.naturalWidth;
+            this.matrixHeight = img.naturalHeight;
 
             // how many lines does the matrix have? in case of smaller matrix files (duration < 360) the first matrix doesn't have 6 lines
             const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
 
             // get matrix frame dimension
-            const matrixFrameWidth: number = (matrixWidth / 6);
-            const matrixFrameHeight: number = (matrixHeight / lines);
+            const matrixFrameWidth: number = (this.matrixWidth / 6);
+            const matrixFrameHeight: number = (this.matrixHeight / lines);
 
             const aspectRatio: number = (matrixFrameWidth / matrixFrameHeight);
             console.log(this.video.name)
@@ -119,59 +88,80 @@ export class VideoFrameComponent implements OnInit {
                 console.log('matrix frame height is ok', (proportion));
             }
 
-            const frameWidth: number = Math.round(matrixFrameWidth / proportion);
-            const frameHeight: number = Math.round(matrixFrameHeight / proportion)
+            this.frameWidth = Math.round(matrixFrameWidth / proportion);
+            this.frameHeight = Math.round(matrixFrameHeight / proportion)
 
-            console.log('Preview frame size', frameWidth, frameHeight);
+            console.log('Preview frame size', this.frameWidth, this.frameHeight);
 
             // set matrix size corresponding to frame width
-            this.frame.nativeElement.style['background-size'] = Math.round(matrixWidth / proportion) + 'px ' + Math.round(matrixHeight / proportion) + 'px';
+            this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth / proportion) + 'px ' + Math.round(this.matrixHeight / proportion) + 'px';
 
-
-
-            // this.frameHeight = Math.round(matrixHeight / lines);
-
-
-            this.frame.nativeElement.style['width'] = frameWidth + 'px';
-            this.frame.nativeElement.style['height'] = frameHeight + 'px';
-
+            this.frame.nativeElement.style['width'] = this.frameWidth + 'px';
+            this.frame.nativeElement.style['height'] = this.frameHeight + 'px';
 
             console.log('- • - • - • - • - • - • - • - • - • - • - • - • ');
         });
 
+    }
+
+    updateFrame(position: number) {
+        let secondsPerPixel = this.video.duration / this.frameWidth;
+
+        let time = position * secondsPerPixel;
+
+        let curMatrixNr: number = Math.floor(time / 360);
+
+        if (curMatrixNr < 0) {
+            curMatrixNr = 0;
+        }
+
+        // get current matrix file url; TODO: this will be handled by sipi; no jpg extension needed
+        const curMatrixFile = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_' + curMatrixNr + '.jpg';
+
+        // the last matrix file could have another dimension size...
+        if (curMatrixNr < this.lastMatrixNr) {
+            this.matrixHeight = Math.round(this.frameHeight * 6);
+        } else {
+            this.lastFrameNr = Math.round(this.video.duration / 10);
+            this.lastMatrixLine = Math.ceil((this.lastFrameNr - (this.lastMatrixNr * 36)) / 6);
+            this.matrixHeight = Math.round(this.frameHeight * this.lastMatrixLine);
+        }
 
 
+        let curFrameNr: number = Math.floor(this.currentTime / 10) - Math.floor(36 * curMatrixNr);
+        if (curFrameNr < 0) {
+            curFrameNr = 0;
+        }
+        if (curFrameNr > this.lastFrameNr) {
+            curFrameNr = this.lastFrameNr;
+        }
 
-        // this.frameWidth = this._host.nativeElement.offsetWidth;
+        // calculate current line and columne number in the matrix and get current frame / preview image position
+        const curLineNr: number = Math.floor(curFrameNr / 6);
+        const curColNr: number = Math.floor(curFrameNr - (curLineNr * 6));
+        const curFramePos: string = '-' + (curColNr * this.frameWidth) + 'px -' + (curLineNr * this.frameHeight) + 'px';
 
-        // // get width and height of matrix file
-        // // if duration > 60s
-        // // if duration >= 360s (first matrix has full size)
-        // this.matrixWidth = width;
-        // this.matrixHeight = height;
+        // manipulate css of preview image on the fly
+        this._host.nativeElement.firstElementChild.style['background-image'] = 'url(' + curMatrixFile + ')';
+        // this.flipbook.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
+        this._host.nativeElement.firstElementChild.style['background-position'] = curFramePos;
 
-        // // how many lines does the matrix have? in case of smaller matrix files (duration < 360) the first matrix doesn't have 6 lines
-        // const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
+    }
 
-        // // ratio between matrix file and css frame width
-        // const ratio: number = (this.frameWidth * 6) / this.matrixWidth;
-
-        // this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth * ratio) + 'px ' + Math.round(this.matrixHeight * ratio) + 'px';
-
-        // // this.frameHeight = Math.round(this.frameWidth / ratio);
-        // this.frameHeight = Math.round(this.matrixHeight / lines * ratio);
-        // this.aspectRatio = this.frameWidth / this.frameHeight;
-
-        // if (this.frameHeight > this._host.nativeElement.clientHeight) {
-        //     this.frameHeight = this._host.nativeElement.clientHeight
-        //     this.frameWidth = this.frameWidth * this.aspectRatio;
+    _onMouseenter(ev: MouseEvent) {
+        // animate frames
+        // let time = 10;
+        // while (time > 0) {
+        //     this.updateFrame(time);
+        //     console.log(time);
+        //     setTimeout(() => {
+        //         time = (time < this.video.duration ? (time + 10) : 10);
+        //     }, 800);
         // }
+    }
 
-        // this.frame.nativeElement.style['width'] = this.frameWidth + 'px';
-        // this.frame.nativeElement.style['height'] = this.frameHeight + 'px';
-
-        // console.log(this.frame);
-
+    _onMouseleave(ev: MouseEvent) {
+        // stop animation
     }
 
 }
