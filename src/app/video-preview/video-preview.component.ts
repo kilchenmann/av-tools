@@ -16,11 +16,11 @@ import { Video } from './../_helper/index/index.component';
                     left: '0',
                 })),
                 state('active', style({
-                    width: '256px',
-                    height: '{{varHeight}}px',
-                    top: '-72px',
-                    left: '-24px'
-                }), { params: { varHeight: 0 } }),
+                    width: '200%',
+                    height: '200%',
+                    top: '-50%',
+                    left: '-50%'
+                })),
                 transition('* <=> *', [
                     animate('500ms ease')
                 ])
@@ -89,13 +89,13 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
-    toggleFlibbook() {
+    toggleFlipbook() {
         this.preview = !this.preview;
 
         this.focusOnPreview = (this.preview ? 'active' : 'inactive');
 
         if (this.preview) {
-            this.calculateSizes();
+            // this.calculateSizes();
         }
 
     }
@@ -109,6 +109,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
         // how many lines does the matrix have? in case of smaller matrix files (duration < 360) the first matrix doesn't have 6 lines
         const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
+        console.log('# lines', lines);
 
         // ratio between matrix file and css frame width
         const ratio: number = (this.frameWidth * 6) / this.matrixWidth;
@@ -116,6 +117,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
         // to calculate frame height, we need the aspect ratio
         if (this.preview && this.focusOnPreview === 'active') {
             this.frameHeight = Math.round(this.matrixHeight / lines * ratio);
+            console.log(this.frameHeight);
             // video aspect ratio
             this.aspectRatio = this.frameWidth / this.frameHeight;
 

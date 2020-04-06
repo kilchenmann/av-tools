@@ -6,9 +6,9 @@ import { Video } from './../_helper/index/index.component';
     templateUrl: './video-frame.component.html',
     styleUrls: ['./video-frame.component.scss'],
     host: {
-        '(mouseenter)': '_onMouseenter($event)',
-        '(mouseleave)': '_onMouseleave($event)',
-        '(mousemove)': 'updateFrame($event.offsetX)'
+        '(mouseenter)': '_onMouseAction($event)',
+        '(mouseleave)': '_onMouseAction($event)',
+        '(mousemove)': '_onMouseAction($event)'
     }
 })
 export class VideoFrameComponent implements OnInit {
@@ -148,7 +148,19 @@ export class VideoFrameComponent implements OnInit {
 
     }
 
-    _onMouseenter(ev: MouseEvent) {
+    _onMouseAction(ev: MouseEvent) {
+        // calculate size again
+
+        this.currentTime = (this.value ? this.value : 5);
+
+        // read first matrix file
+        this.matrix = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_0.jpg';
+
+        // and calculate frame size with correct aspect ratio
+        this.calculateSizes(this.matrix);
+
+        this._host.nativeElement.firstElementChild.style['background-image'] = 'url(' + this.matrix + ')';
+
         // animate frames
         // let time = 10;
         // while (time > 0) {
