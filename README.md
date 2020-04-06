@@ -2,7 +2,7 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.5.
 
-It's the developing environment and playground for the A/V tools in [Knora](https://knora.org) and [Sipi](https://sipi.io).
+It's the developing environment and playground for the A/V tools of [Knora](https://knora.org) and [Sipi](https://sipi.io). The main components from this app will be moved to [Knora-ui-ng-lib](https://github.com/dasch-swiss/knora-ui-ng-lib) as soon they are ready and Knora-ui-ng-lib supports Angular 9.
 
 The app starts with a kind of index of test videos (and later additionally with audio documents). It simulates the view of search results - "how it could look like". The main important part is the dynamic video preview container based on the mouse movement.
 
