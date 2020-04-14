@@ -6,13 +6,13 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { AudioToolComponent } from './audio-tool/audio-tool.component';
-import { AudioComponent } from './audio/audio.component';
+import { AudioPlayerComponent } from './audio-player/audio-player.component';
 import { AvTimelineComponent } from './av-timeline/av-timeline.component';
 import { MaterialModule } from './material-module';
 import { VideoFrameComponent } from './video-frame/video-frame.component';
 import { VideoPreviewComponent } from './video-preview/video-preview.component';
 import { VideoToolComponent } from './video-tool/video-tool.component';
-import { VideoComponent } from './video/video.component';
+import { VideoPlayerComponent } from './video-player/video-player.component';
 import { DisableContextMenuDirective } from './_helper/disable-context-menu.directive';
 import { IndexComponent } from './_helper/index/index.component';
 import { ProgressIndicatorComponent } from './_helper/progress-indicator/progress-indicator.component';
@@ -26,9 +26,9 @@ import { TimePipe } from './_helper/time.pipe';
         TimePipe,
         AvTimelineComponent,
         VideoFrameComponent,
-        AudioComponent,
+        AudioPlayerComponent,
         AudioToolComponent,
-        VideoComponent,
+        VideoPlayerComponent,
         VideoToolComponent,
         VideoPreviewComponent,
         DisableContextMenuDirective,

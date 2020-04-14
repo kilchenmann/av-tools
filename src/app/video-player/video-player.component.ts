@@ -1,13 +1,13 @@
-import { pointerValue } from './../av-timeline/av-timeline.component';
+import { pointerValue } from '../av-timeline/av-timeline.component';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 
 @Component({
-    selector: 'kui-video',
-    templateUrl: './video.component.html',
-    styleUrls: ['./video.component.scss']
+    selector: 'kui-video-player',
+    templateUrl: './video-player.component.html',
+    styleUrls: ['./video-player.component.scss']
 })
-export class VideoComponent implements OnInit {
+export class VideoPlayerComponent implements OnInit {
 
     loading: boolean = true;
 
