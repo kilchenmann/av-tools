@@ -8,7 +8,6 @@
 </div> -->
 
 <div class="flipbook" [class.active]="focusOnPreview === 'active'"
-    [@focus]="{ value: focusOnPreview, params: { varHeight: frameHeight } }" (mousemove)="updatePreview($event.offsetX)"
-    (mouseenter)="toggleFlipbook()" (mouseleave)="toggleFlipbook()">
-    <kui-video-frame [video]="video"></kui-video-frame>
+    [@focus]="{ value: focusOnPreview, params: { varHeight: frameHeight } }">
+    <!-- <kui-video-frame [video]="video"></kui-video-frame> -->
 </div>

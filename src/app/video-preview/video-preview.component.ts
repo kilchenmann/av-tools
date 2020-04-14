@@ -26,7 +26,12 @@ import { Video } from './../_helper/index/index.component';
                 ])
             ]
         )
-    ]
+    ],
+    host: {
+        '(mouseenter)': 'toggleFlipbook()',
+        '(mouseleave)': 'toggleFlipbook()',
+        '(mousemove)': 'updatePreview($event)'
+    }
 })
 export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
@@ -85,7 +90,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     ngAfterViewInit() {
         this.calculateSizes();
 
-        this.updatePreview(42);
+        // this.updatePreview(42);
 
     }
 
@@ -126,7 +131,11 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
-    updatePreview(position: number) {
+    updatePreview(ev: MouseEvent) {
+
+        console.log(ev);
+
+        const position: number = ev.clientX;
 
         // const position: number = ev.offsetX;
 
