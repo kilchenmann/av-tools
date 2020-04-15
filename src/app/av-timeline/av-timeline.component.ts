@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, SimpleChange, Renderer2 } from '@angular/core';
+import { CdkDragMove } from '@angular/cdk/drag-drop';
 
 export interface pointerValue {
     position: number;
@@ -16,12 +17,12 @@ export interface pointerValue {
         '(keyup)': '_onKeyup()',
         '(mouseenter)': '_onMouseenter($event)',
         '(mousemove)': '_onMousemove($event)',
-        '(mousedown)': '_onMousemove($event)',
+        // '(mousedown)': '_onMousemove($event)',
         '(mouseup)': '_onMouseup($event)',
         '(window:resize)': '_onWindowResize($event)'
     }
 })
-export class AvTimelineComponent implements OnInit, OnChanges {
+export class AvTimelineComponent implements OnChanges {
 
     /** current time value */
     @Input() value: number;
@@ -48,6 +49,8 @@ export class AvTimelineComponent implements OnInit, OnChanges {
     /** thumb element: current postion pointer */
     @ViewChild('thumb') _thumb: ElementRef;
 
+    dragging: boolean = false;
+
     /** size of timeline; will be used to calculate progress position in pixel corresponding to time value */
     timelineDimension: ClientRect | null = null;
 
@@ -56,9 +59,6 @@ export class AvTimelineComponent implements OnInit, OnChanges {
 
     constructor(private _renderer: Renderer2) {
         // this.dragging = this.unboundDragging.bind(this);
-    }
-
-    ngOnInit(): void {
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
@@ -76,18 +76,58 @@ export class AvTimelineComponent implements OnInit, OnChanges {
             }
         }
 
-        // update pointer position
-        this.updateThumbPosition(this.value);
+        // update pointer position from time
+        this.updatePositionFromTime(this.value);
     }
-    /** mouse enters the timeline */
+
+    updatePositionFromTime(time: number) {
+        // calc position on the x axis from time value
+        const percent: number = (time / this.max);
+
+        const pos: number = this.timelineDimension.width * percent;
+
+        this.updatePosition(pos);
+    }
+
+    updatePosition(pos: number) {
+        // already played time
+        const fillPos = (pos / this.timelineDimension.width);
+
+        // background (timeline fill) start position
+        const bgPos = (1 - fillPos);
+
+        if (!this.dragging) {
+            // update thumb position if not dragging
+            this._thumb.nativeElement.style['transform'] = 'translateX(' + pos + 'px) scale(.7)';
+        }
+        // adjust progress width / fill already played time
+        this._progress.nativeElement.children[0].style['transform'] = 'translateX(0px) scale3d(' + bgPos + ', 1, 1)';
+        // adjust progress width / progress background
+        this._progress.nativeElement.children[2].style['transform'] = 'translateX(0px) scale3d(' + fillPos + ', 1, 1)';
+    }
+
+    toggleDragging() {
+        this.dragging = !this.dragging;
+    }
+
+    dragAction(ev: CdkDragMove) {
+        const pos: number = (ev.pointerPosition.x - this.timelineDimension.left);
+        this.updatePosition(pos);
+    }
+
+    /** mouse enters timeline */
     _onMouseenter(ev: MouseEvent) {
         this.timelineDimension = this.getTimelineDimensions();
     }
-    /** mouse leaves the timeline */
-    _onMousemove(ev: MouseEvent) {
-        const pos: number = ((ev.clientX - this.timelineDimension.left) / this.timelineDimension.width);
 
-        let time: number = (pos * this.max);
+    /** mouse moves on timeline */
+    _onMousemove(ev: MouseEvent) {
+
+        const pos: number = ev.clientX - this.timelineDimension.left;
+
+        const percent: number = pos / this.timelineDimension.width;
+
+        let time: number = (percent * this.max);
 
         if (time < 0) {
             time = 0;
@@ -98,21 +138,24 @@ export class AvTimelineComponent implements OnInit, OnChanges {
         this.move.emit({ position: ev.clientX, time: time })
     }
 
-    /** event listener on window resize */
-    _onWindowResize(ev: Event) {
-        this.timelineDimension = this.getResizedTimelineDimensions();
-        console.log('updated?', this.timelineDimension);
-    }
+    _onMouseup(ev: MouseEvent) {
 
-    updateThumbPosition(time: number) {
-        // calc position on the x axis from time value
-        const percent: number = (time / this.max);
-        // this.timelineDimension = this.getTimelineDimensions();
-        // console.log(this.timelineDimension);
-        const pos: number = this.timelineDimension.width * percent;
+        const pos: number = (ev.clientX - this.timelineDimension.left);
 
         this.updatePosition(pos);
 
+        // const pos: number = ((ev.clientX - this.timelineDimension.left) / this.timelineDimension.width);
+
+        const percentage: number = (pos / this.timelineDimension.width);
+
+        // // calc time value to submit to parent
+        const time: number = (percentage * this.max);
+        this.change.emit(time);
+    }
+
+    /** event listener on window resize */
+    _onWindowResize(ev: Event) {
+        this.timelineDimension = this.getResizedTimelineDimensions();
     }
 
     /**
@@ -135,105 +178,5 @@ export class AvTimelineComponent implements OnInit, OnChanges {
         }
 
     }
-
-
-    updatePosition(pos: number) {
-
-        // const pos: number = (posX); // - this.timelineDimension.left);
-
-        // already played time
-        const fillPos = (pos / this.timelineDimension.width);
-
-        // background start position
-        const bgPos = (1 - fillPos);
-
-
-        this._thumb.nativeElement.style['transform'] = 'translateX(' + pos + 'px) scale(.7)';
-
-        // adjust progress width / fill already played time
-        this._progress.nativeElement.children[0].style['transform'] = 'translateX(0px) scale3d(' + bgPos + ', 1, 1)';
-        // adjust progress width / progress background
-        this._progress.nativeElement.children[2].style['transform'] = 'translateX(0px) scale3d(' + fillPos + ', 1, 1)';
-
-
-    }
-
-    dragStart(ev: DragEvent) {
-
-        console.log('dragStart', ev);
-    }
-    //     ev.preventDefault();
-    //     console.log(ev);
-
-    //     let posX: number;
-
-    //     if (ev.type == 'touchstart') {
-    //         // posX = ev.touches[0].clientX;
-    //     } else {
-    //         posX = ev.clientX;
-    //         // console.log(this._onMousemove);
-    //         if (this.dragEvent) {
-    //             this.dragEvent();
-    //         }
-
-    //         this.dragEvent = this._renderer.listen('host', 'mousemove', this.dragging);
-
-    //         console.log(this.dragEvent);
-    //         // this._onMousemove(ev);
-    //         // if (this._onMousemove) {
-    //         //     console.log('drag n move');
-    //         // }
-    //         // if (this._onMouseup) {
-    //         //     console.log('drag end')
-    //         // }
-    //     }
-
-    // }
-
-    dragAction(ev: DragEvent) {
-        console.log('dragAction', ev);
-        this.updatePosition(ev.clientX);
-
-        this.change.emit
-
-    }
-
-    dragEnd(ev: DragEvent) {
-
-        console.log('dragEnd', ev);
-
-
-    }
-
-    _onMouseup(ev: MouseEvent) {
-
-        const pos: number = ((ev.clientX - this.timelineDimension.left) / this.timelineDimension.width);
-
-        // calc time value to submit to parent
-        const time: number = (pos * this.max);
-        this.change.emit(time)
-    }
-
-    mouseUp(ev: MouseEvent) {
-        // this.calcPreviewTime(ev);
-        // console.log(this.timeline);
-        // console.log(this.progress);
-
-        // this.updatePosition(ev.offsetX);
-
-        // send value to parent
-
-
-        //  .nativeElement.lastElementChild.nativeElement.style('left') = ev.offsetX + 'px';
-
-        // console.log('mouse up on', this.previewTime)
-        // this.navigate(this.previewTime);
-    }
-
-    // unboundDragging(event: MouseEvent) {
-    //     console.log('unboundDragging ', event)
-    //     // const pos = this.xStartElementPoint + (event.pageX - this.xStartMousePoint);
-    //     // this.curY = this.yStartElementPoint + (event.pageY - this.yStartMousePoint);
-    // }
 
 }

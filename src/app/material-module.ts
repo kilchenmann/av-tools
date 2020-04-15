@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 
+// material cdk modules
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 // material modules
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -18,8 +21,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+
 @NgModule({
     imports: [
+        DragDropModule,
         MatButtonModule,
         MatButtonToggleModule,
         MatDividerModule,
@@ -39,6 +44,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ],
 
     exports: [
+        DragDropModule,
         MatButtonModule,
         MatButtonToggleModule,
         MatDividerModule,

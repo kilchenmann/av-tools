@@ -1,13 +1,14 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Video } from './../_helper/index/index.component';
+import { style } from '@angular/animations';
 
 @Component({
     selector: 'kui-video-frame',
     templateUrl: './video-frame.component.html',
     styleUrls: ['./video-frame.component.scss'],
     host: {
-        '(mouseenter)': '_onMouseAction($event)',
-        '(mouseleave)': '_onMouseAction($event)',
+        '(mouseenter)': '_onMouseenter($event)',
+        '(mouseleave)': '_onMouseleave($event)',
         '(mousemove)': '_onMouseAction($event)'
     }
 })
@@ -15,6 +16,8 @@ export class VideoFrameComponent implements OnInit {
 
     @Input() video: Video;
     @Input() value?: number;
+
+
 
     currentTime: number;
 
@@ -105,6 +108,9 @@ export class VideoFrameComponent implements OnInit {
     }
 
     updateFrame(position: number) {
+
+        console.log(position);
+
         let secondsPerPixel = this.video.duration / this.frameWidth;
 
         let time = position * secondsPerPixel;
@@ -149,17 +155,18 @@ export class VideoFrameComponent implements OnInit {
     }
 
     _onMouseAction(ev: MouseEvent) {
-        // calculate size again
 
-        this.currentTime = (this.value ? this.value : 5);
+        this.updateFrame(ev.clientX);
 
-        // read first matrix file
-        this.matrix = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_0.jpg';
+        // this.currentTime = (this.value ? this.value : 5);
 
-        // and calculate frame size with correct aspect ratio
-        this.calculateSizes(this.matrix);
+        // // read first matrix file
+        // this.matrix = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_0.jpg';
 
-        this._host.nativeElement.firstElementChild.style['background-image'] = 'url(' + this.matrix + ')';
+        // // and calculate frame size with correct aspect ratio
+        // this.calculateSizes(this.matrix);
+
+        // this._host.nativeElement.firstElementChild.style['background-image'] = 'url(' + this.matrix + ')';
 
         // animate frames
         // let time = 10;
@@ -172,8 +179,16 @@ export class VideoFrameComponent implements OnInit {
         // }
     }
 
+    _onMouseenter(ev: MouseEvent) {
+        this.frameWidth = this._host.nativeElement.offsetWidth * 2;
+        // this._host.nativeElement.style['width'] = '200%';
+        // this._host.nativeElement.style['height'] = '200%';
+    }
+
     _onMouseleave(ev: MouseEvent) {
-        // stop animation
+        this._host.nativeElement.style['width'] = '100%';
+        this._host.nativeElement.style['height'] = '100%';
+
     }
 
 }
