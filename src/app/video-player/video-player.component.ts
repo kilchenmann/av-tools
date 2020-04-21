@@ -1,6 +1,5 @@
-import { pointerValue } from '../av-timeline/av-timeline.component';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
+import { pointerValue } from '../av-timeline/av-timeline.component';
 
 @Component({
     selector: 'kui-video-player',

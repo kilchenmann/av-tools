@@ -1,14 +1,35 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Video } from './../_helper/index/index.component';
-import { style } from '@angular/animations';
 
 @Component({
     selector: 'kui-video-frame',
     templateUrl: './video-frame.component.html',
     styleUrls: ['./video-frame.component.scss'],
+    animations: [
+        trigger('focus',
+            [
+                state('inactive', style({
+                    width: '100%',
+                    height: '100%',
+                    top: '0',
+                    left: '0',
+                })),
+                state('active', style({
+                    width: '200%',
+                    height: '200%',
+                    top: '-50%',
+                    left: '-50%'
+                })),
+                transition('* <=> *', [
+                    animate('500ms ease')
+                ])
+            ]
+        )
+    ],
     host: {
-        '(mouseenter)': '_onMouseenter($event)',
-        '(mouseleave)': '_onMouseleave($event)',
+        '(mouseenter)': 'toggleFlipbook()',
+        '(mouseleave)': 'toggleFlipbook()',
         '(mousemove)': '_onMouseAction($event)'
     }
 })
@@ -16,8 +37,6 @@ export class VideoFrameComponent implements OnInit {
 
     @Input() video: Video;
     @Input() value?: number;
-
-
 
     currentTime: number;
 
@@ -30,6 +49,9 @@ export class VideoFrameComponent implements OnInit {
     frameWidth: number;
     frameHeight: number;
     lastFrameNr: number;
+
+    preview: boolean = false;
+    focusOnPreview: string = 'inactive';
 
     @ViewChild('frame') frame: ElementRef;
 
@@ -151,6 +173,17 @@ export class VideoFrameComponent implements OnInit {
         this._host.nativeElement.firstElementChild.style['background-image'] = 'url(' + curMatrixFile + ')';
         // this.flipbook.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
         this._host.nativeElement.firstElementChild.style['background-position'] = curFramePos;
+
+    }
+
+    toggleFlipbook() {
+        this.preview = !this.preview;
+
+        this.focusOnPreview = (this.preview ? 'active' : 'inactive');
+
+        if (this.preview && this.focusOnPreview === 'active') {
+            this.calculateSizes(this.matrix);
+        }
 
     }
 

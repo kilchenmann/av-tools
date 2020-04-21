@@ -1,5 +1,5 @@
 <!-- preview image -->
-<div class="frame" #frame>
+<div class="frame" [class.active]="preview" #frame [@focus]="{ value: focusOnPreview }">
     <p class="frame-time" *ngIf="value">
         <span class="time">{{ value | kuiTime }}</span>
     </p>

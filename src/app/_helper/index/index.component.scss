@@ -5,11 +5,14 @@
   display: block;
 
   .mat-list-item {
-    margin: 24px 0;
+    margin: 64px 0;
   }
 
   .own-preview-style {
-    // width: 72px !important;
-    // height: 40px;
+    // width: 80px !important;
+    width: 160px !important;
+    // height: 48px !important;
+    height: 120px !important;
+    border-radius: 2px !important;
   }
 }

@@ -19,6 +19,7 @@ import { ProgressIndicatorComponent } from './_helper/progress-indicator/progres
 import { ResizedDirective } from './_helper/resized.directive';
 import { TimePipe } from './_helper/time.pipe';
 import { VideoToolComponent } from './_helper/video-tool/video-tool.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
     declarations: [
@@ -40,6 +41,7 @@ import { VideoToolComponent } from './_helper/video-tool/video-tool.component';
         BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
+        HttpClientModule,
         MaterialModule,
         RouterModule
     ],
