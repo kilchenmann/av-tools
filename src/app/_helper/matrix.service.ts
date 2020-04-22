@@ -3,6 +3,30 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { catchError, map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { Video } from './index/index.component';
+import { environment } from '../../environments/environment';
+
+export interface Size {
+    "width": number;
+    "height": number;
+}
+export interface Profile {
+    "formats": [string];
+    "qualities": [string];
+    "supports": [string];
+}
+
+export interface SipiImageInfo {
+    "@context": string;
+    "@id": string;
+    "protocol": string;
+    "width": number;
+    "height": number;
+    "sizes": [Size];
+    "profile": (string | Profile)[];
+}
+
+
 
 
 @Injectable({
@@ -15,11 +39,18 @@ export class MatrixService {
         // private messageService: MessageService
     ) { }
 
-    getMatrixInfo(matrix: string): Observable<any> {
-        return this.http.get<any>(matrix)
+    getMatrixInfo(matrix: string): Observable<SipiImageInfo> {
+        return this.http.get<SipiImageInfo>(matrix)
             .pipe(
                 catchError(this.handleError<any>('getMatrixInfo', {}))
             );
+    }
+
+    getCurrentFrame(time: number, video: Video): string {
+        this.getMatrixInfo(environment.iiifUrl + video.name + '_m_0.jpg/info.json').subscribe((res: SipiImageInfo) => {
+
+        })
+        return 'sipiurl';
     }
 
 

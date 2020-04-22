@@ -11,6 +11,9 @@ export class VideoPlayerComponent implements OnInit {
     loading: boolean = true;
 
     @Input() video: string;
+    startAt: number = 0;
+    videoSrc: string;
+
 
     @ViewChild('videoEle') videoEle: ElementRef;
     @ViewChild('timeline') timeline: ElementRef;
@@ -59,7 +62,9 @@ export class VideoPlayerComponent implements OnInit {
     constructor(private _videoPlayer: ElementRef) { }
 
     ngOnInit(): void {
-
+        if (this.video) {
+            this.videoSrc = 'http://localhost:1024/images/' + this.video + '.mp4#t=' + this.startAt;
+        }
     }
 
     /**
