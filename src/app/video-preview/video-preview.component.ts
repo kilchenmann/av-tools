@@ -87,20 +87,13 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     ) { }
 
     ngOnInit(): void {
-        // this.updatePreview(this.frameWidth);
         this.time = this.time || (this.video.duration / 2);
 
-        // this.matrix = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_0.jpg'
-
-        this.matrix = 'http://localhost:1024/images/' + this.video.name + '_m_0.jpg';
-
-        // youtube background of preview:
-        // url("https://i9.ytimg.com/sb/QBGBj6cse1M/storyboard3_L2/M5.jpg?sqp=ovOX_wMGCIaP8a0F&sigh=rs%24AOn4CLATgVfOSX0eBDb1WCe_UHNpjqf1mQ") - 640px - 90px / 800px 270px
-
-        // http://localhost:1024/images/one-week_m_0.jpg/320,240,160,120/full/0/default.jpg
+        this.matrix = environment.iiifUrl + this.video.name + '_m_0.jpg';
     }
 
     ngOnChanges() {
+        // TODO: update time from timeline
         // console.log('something has changed', this.frameHeight)
         // this.calculateSizes();
         // this.frameHeight = this.element.nativeElement.clientHeight;
@@ -109,12 +102,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     ngAfterViewInit() {
 
         this.calculateSizes(this.matrix, false);
-
-        // this.calculateSizesWithSipi(this.matrix);
-        // this.frame.nativeElement.style['background-image'] = 'url(' + this.matrix + ')';
-
-
-        // this.updatePreview(42);
 
     }
 
@@ -125,11 +112,9 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
         let j: number = 0;
 
         if (this.focusOnPreview) {
-            // Variant 1: Automatic playback of individual frames from first matrix
-            // this.setDelay(i, j, false);
-
-            // Variant 2: Mousemove on x-Axis to slide through the video
-
+            // automatic playback of individual frames from first matrix
+            // TODO: activate this later with an additional parameter (@Input) to switch between mousemove and automatic preview
+            // this.autoPlay(i, j, false);
 
         } else {
             i = 0;
@@ -137,7 +122,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
-    setDelay(i: number, j: number, sipi: boolean, delay: number = 250) {
+    autoPlay(i: number, j: number, sipi: boolean, delay: number = 250) {
         let iiifParams: string;
         let cssParams: string;
         let x: number = 0;
@@ -161,12 +146,12 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
             i++;
             if (i < 6 && this.focusOnPreview) {
-                this.setDelay(i, j, sipi);
+                this.autoPlay(i, j, sipi);
             } else {
                 i = 0;
                 j++;
                 if (j < 6 && this.focusOnPreview) {
-                    this.setDelay(i, j, sipi);
+                    this.autoPlay(i, j, sipi);
                 }
             }
         }, delay);
@@ -182,7 +167,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             this.matrixHeight = res.height;
 
             const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
-            console.log('#matrix lines:', this.video.name, lines)
 
             // get matrix frame dimension
             this.matrixFrameWidth = (this.matrixWidth / 6);
@@ -226,33 +210,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
-
-    calculateSizesDepr() {
-        // get width and height of matrix file
-        // if duration > 60s
-        // if duration >= 360s (first matrix has full size)
-        // this.matrixWidth = this.matrixEle.nativeElement.width;
-        // this.matrixHeight = this.matrixEle.nativeElement.height;
-
-        // how many lines does the matrix have? in case of smaller matrix files (duration < 360) the first matrix doesn't have 6 lines
-        const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
-        console.log('# lines', lines);
-
-        // ratio between matrix file and css frame width
-        const ratio: number = (this.frameWidth * 6) / this.matrixWidth;
-
-        // to calculate frame height, we need the aspect ratio
-        if (this.focusOnPreview) {
-            this.frameHeight = Math.round(this.matrixHeight / lines * ratio);
-            console.log(this.frameHeight);
-            // video aspect ratio
-            this.aspectRatio = this.frameWidth / this.frameHeight;
-
-            // set correct background size for matrix file and flipbook
-            // this.flipbook.nativeElement.style['background-size'] = Math.round(this.matrixWidth * ratio) + 'px ' + Math.round(this.matrixHeight * ratio) + 'px';
-        }
-    }
-
     updatePreviewByPosition(ev: MouseEvent) {
 
         let position: number = ev.offsetX;
@@ -292,7 +249,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth / this.proportion) + 'px auto';
             // + Math.round(this.matrixHeight / this.proportion) + 'px';
         } else {
-            console.log('smaller matrix on:', this.video.name)
             this.lastMatrixFrameNr = Math.floor((this.video.duration - 8) / 10);
             this.lastMatrixLine = Math.ceil((this.lastMatrixFrameNr - (this.lastMatrixNr * 36)) / 6) + 1;
             this.matrixHeight = Math.round(this.frameHeight * this.lastMatrixLine);
@@ -322,37 +278,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
-    updatePreview(ev: MouseEvent) {
-
-        console.log(ev);
-
-        const position: number = ev.clientX;
-
-        // const position: number = ev.offsetX;
-
-        // one frame per 6 pixels
-        if (Number.isInteger(position / 6)) {
-
-            // calculate seconds per pixel
-            // this.secondsPerPixel = this.video.duration / this.frameWidth;
-
-            // get time of mouse position and set preview image time
-            // this.previewTime = position * this.secondsPerPixel;
-
-
-
-            // manipulate css of preview image on the fly
-            // this.flipbook.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
-            // this.flipbook.nativeElement.style['background-position'] = curFramePos;
-        }
-
-
-
-    }
-
     openVideo() {
-        console.log('openvideo', this.video.name)
-        console.log('openvideo at', this.time)
         this.open.emit({ video: this.video.name, time: Math.round(this.time) });
     }
 
