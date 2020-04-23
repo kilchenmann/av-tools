@@ -11,7 +11,7 @@ export class VideoPlayerComponent implements OnInit {
     loading: boolean = true;
 
     @Input() video: string;
-    startAt: number = 0;
+    @Input() start?: number = 0;
     videoSrc: string;
 
 
@@ -40,7 +40,7 @@ export class VideoPlayerComponent implements OnInit {
 
     // time information
     duration: number;
-    currentTime: number = 0;
+    currentTime: number = this.start;
     previewTime: number = 0;
 
     // seconds per pixel to calculate preview image on timeline
@@ -54,17 +54,28 @@ export class VideoPlayerComponent implements OnInit {
 
     // volume
     volume: number = .75;
-    muted: boolean = true;
+    muted: boolean = false;
 
     // video player mode
     cinemaMode: boolean = false;
+
+    // matTooltipPosition
+    matTooltipPos: string = 'above';
 
     constructor(private _videoPlayer: ElementRef) { }
 
     ngOnInit(): void {
         if (this.video) {
-            this.videoSrc = 'http://localhost:1024/images/' + this.video + '.mp4#t=' + this.startAt;
+            this.videoSrc = 'http://localhost:1024/images/' + this.video + '.mp4#t=' + this.start;
         }
+    }
+
+    /** Stop playing and go back to start */
+    goToStart() {
+        this.videoEle.nativeElement.pause();
+        this.play = false;
+        this.currentTime = 0;
+        this.videoEle.nativeElement.currentTime = this.currentTime;
     }
 
     /**

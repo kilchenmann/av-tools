@@ -1,7 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { Video } from './../_helper/index/index.component';
 import { MatrixService } from '../_helper/matrix.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'kui-video-preview',
@@ -30,7 +31,9 @@ import { MatrixService } from '../_helper/matrix.service';
     // ],
     host: {
         '(mouseenter)': 'toggleFlipbook(true)',
-        '(mouseleave)': 'toggleFlipbook(false)'
+        '(mouseleave)': 'toggleFlipbook(false)',
+        '(mousemove)': 'updatePreviewByPosition($event)',
+        '(click)': 'openVideo()'
     }
 })
 export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
@@ -40,6 +43,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     /** show frame at the corresponding time */
     @Input() time?: number;
+
+    @Output() open = new EventEmitter<{ video: string, time: number }>();
 
     focusOnPreview: boolean = false;
 
@@ -120,17 +125,10 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
         let j: number = 0;
 
         if (this.focusOnPreview) {
-            // Variant 1: Automatic playback of individual frames
-            // first try
-            this.setDelay(i, j, false);
+            // Variant 1: Automatic playback of individual frames from first matrix
+            // this.setDelay(i, j, false);
 
             // Variant 2: Mousemove on x-Axis to slide through the video
-
-            // css background instead of sipi
-            // this.frame.nativeElement.style['background-size'] = Math.round(((this.matrixWidth / this.proportion) * 280) / 100) + 'px ' + Math.round(((this.matrixHeight / this.proportion) * 280) / 100) + 'px';
-
-            // this.frame.nativeElement.style['width'] = ((this.frameWidth * 280) / 100) + 'px';
-            // this.frame.nativeElement.style['height'] = ((this.frameHeight * 280) / 100) + 'px';
 
 
         } else {
@@ -184,10 +182,13 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             this.matrixHeight = res.height;
 
             const lines: number = (this.video.duration > 360 ? 6 : Math.round(this.video.duration / 60));
+            console.log('#matrix lines:', this.video.name, lines)
 
             // get matrix frame dimension
             this.matrixFrameWidth = (this.matrixWidth / 6);
             this.matrixFrameHeight = (this.matrixHeight / lines);
+
+            this.lastMatrixNr = Math.floor((this.video.duration - 10) / 360);
 
             // host dimension
             const parentFrameWidth: number = this._host.nativeElement.offsetWidth;
@@ -210,12 +211,12 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
                 const iiifParams: string = '0,0,' + this.matrixFrameWidth + ',' + this.matrixFrameHeight + '/' + this.frameWidth + ',/0/default.jpg';
                 const currentFrame: string = image + '/' + iiifParams;
                 this.frame.nativeElement.style['background-image'] = 'url(' + currentFrame + ')';
-
                 this.frame.nativeElement.style['background-size'] = this.frameWidth + 'px ' + this.frameHeight + 'px';
             } else {
                 // background-image, -size
-                this.frame.nativeElement.style['background-image'] = 'url(' + this.matrix + '/full/full/0/default.jpg'
-                this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth / this.proportion) + 'px ' + Math.round(this.matrixHeight / this.proportion) + 'px';
+                this.frame.nativeElement.style['background-image'] = 'url(' + this.matrix + '/full/full/0/default.jpg)';
+                this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth / this.proportion) + 'px auto';
+                // + Math.round(this.matrixHeight / this.proportion) + 'px';
             }
 
             this.frame.nativeElement.style['width'] = this.frameWidth + 'px';
@@ -252,6 +253,75 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
 
+    updatePreviewByPosition(ev: MouseEvent) {
+
+        let position: number = ev.offsetX;
+
+        // one frame per 6 pixels
+        if (Number.isInteger(position / 6)) {
+            // calculate time from relative mouse position;
+            this.time = (ev.offsetX / this._host.nativeElement.offsetWidth) * this.video.duration;
+
+            this.updatePreviewByTime();
+        }
+
+    }
+
+    updatePreviewByTime() {
+        // overflow fixes
+        if (this.time < 0) {
+            this.time = 0;
+        }
+        if (this.time > this.video.duration) {
+            this.time = this.video.duration;
+        }
+
+        // get current matrix image; one matrix contains 6 minute of the video
+        let curMatrixNr: number = Math.floor(this.time / 360);
+
+        if (curMatrixNr < 0) {
+            curMatrixNr = 0;
+        }
+
+        // get current matrix file url; TODO: this will be handled by sipi
+        this.matrix = environment.iiifUrl + this.video.name + '_m_' + curMatrixNr;
+
+        // the last matrix file could have another dimension size...
+        if (curMatrixNr < this.lastMatrixNr) {
+            this.matrixHeight = Math.round(this.frameHeight * 6);
+            this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth / this.proportion) + 'px auto';
+            // + Math.round(this.matrixHeight / this.proportion) + 'px';
+        } else {
+            console.log('smaller matrix on:', this.video.name)
+            this.lastMatrixFrameNr = Math.floor((this.video.duration - 8) / 10);
+            this.lastMatrixLine = Math.ceil((this.lastMatrixFrameNr - (this.lastMatrixNr * 36)) / 6) + 1;
+            this.matrixHeight = Math.round(this.frameHeight * this.lastMatrixLine);
+            this.frame.nativeElement.style['background-size'] = Math.round(this.matrixWidth / this.proportion) + 'px auto';
+            // + Math.round(this.matrixHeight / this.proportion) + 'px';
+        }
+
+        let curFrameNr: number = Math.floor(this.time / 10) - Math.floor(36 * curMatrixNr);
+
+        if (curFrameNr < 0) {
+            curFrameNr = 0;
+        }
+        if (curFrameNr > this.lastMatrixFrameNr) {
+            curFrameNr = this.lastMatrixFrameNr;
+        }
+
+        // calculate current line and columne number in the matrix and get current frame / preview image position
+        const curLineNr: number = Math.floor(curFrameNr / 6);
+        const curColNr: number = Math.floor(curFrameNr - (curLineNr * 6));
+        const cssParams: string = '-' + (curColNr * this.frameWidth) + 'px -' + (curLineNr * this.frameHeight) + 'px';
+        // console.log('curFramePos', curFramePos);
+
+        this.frame.nativeElement.style['background-image'] = 'url(' + this.matrix + '.jpg/full/full/0/default.jpg)';
+
+
+        this.frame.nativeElement.style['background-position'] = cssParams;
+
+    }
+
     updatePreview(ev: MouseEvent) {
 
         console.log(ev);
@@ -269,46 +339,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             // get time of mouse position and set preview image time
             // this.previewTime = position * this.secondsPerPixel;
 
-            // overflow fixes
-            if (this.time < 0) {
-                this.time = 0;
-            }
-            if (this.time > this.video.duration) {
-                this.time = this.video.duration;
-            }
 
-            // get current matrix image; one matrix contains 6 minute of the video
-            let curMatrixNr: number = Math.floor(this.time / 360);
-
-            if (curMatrixNr < 0) {
-                curMatrixNr = 0;
-            }
-
-            // get current matrix file url; TODO: this will be handled by sipi; no jpg extension needed
-            const curMatrixFile = 'data/' + this.video.name + '/matrix/' + this.video.name + '_m_' + curMatrixNr + '.jpg';
-
-            // the last matrix file could have another dimension size...
-            if (curMatrixNr < this.lastMatrixNr) {
-                this.matrixHeight = Math.round(this.frameHeight * 6);
-            } else {
-                this.lastMatrixFrameNr = Math.round(this.video.duration / 10);
-                this.lastMatrixLine = Math.ceil((this.lastMatrixFrameNr - (this.lastMatrixNr * 36)) / 6);
-                this.matrixHeight = Math.round(this.frameHeight * this.lastMatrixLine);
-            }
-
-
-            let curFrameNr: number = Math.floor(this.time / 10) - Math.floor(36 * curMatrixNr);
-            if (curFrameNr < 0) {
-                curFrameNr = 0;
-            }
-            if (curFrameNr > this.lastMatrixFrameNr) {
-                curFrameNr = this.lastMatrixFrameNr;
-            }
-
-            // calculate current line and columne number in the matrix and get current frame / preview image position
-            const curLineNr: number = Math.floor(curFrameNr / 6);
-            const curColNr: number = Math.floor(curFrameNr - (curLineNr * 6));
-            const curFramePos: string = '-' + (curColNr * this.frameWidth) + 'px -' + (curLineNr * this.frameHeight) + 'px';
 
             // manipulate css of preview image on the fly
             // this.flipbook.nativeElement.style['background-image'] = 'url(' + curMatrixFile + ')';
@@ -317,6 +348,12 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
 
 
+    }
+
+    openVideo() {
+        console.log('openvideo', this.video.name)
+        console.log('openvideo at', this.time)
+        this.open.emit({ video: this.video.name, time: Math.round(this.time) });
     }
 
 

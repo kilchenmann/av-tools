@@ -71,6 +71,10 @@
     .action {
       margin: 8px 0 16px;
 
+      .mat-icon-button[disabled][disabled] {
+        color: rgba(255, 255, 255, 0.26);
+      }
+
       .time {
         margin-top: 12px;
         padding: 0 6px;

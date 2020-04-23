@@ -26,6 +26,10 @@ const routes: Routes = [
     {
         path: 'video/:name',
         component: VideoToolComponent
+    },
+    {
+        path: 'video/:name/:start',
+        component: VideoToolComponent
     }
 ];
 

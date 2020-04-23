@@ -1,7 +1,7 @@
 <mat-list>
     <div mat-subheader>Videos</div>
     <mat-list-item *ngFor="let item of videos">
-        <kui-video-preview [routerLink]="'/video/' + item.name" matListAvatar [video]="item" class="own-preview-style">
+        <kui-video-preview matListAvatar [video]="item" class="own-preview-style" (open)="openVideo($event)">
         </kui-video-preview>
         <div mat-line class="link" [routerLink]="'/video/' + item.name">{{ item.name | uppercase}} |
             {{ item.duration | kuiTime }}</div>

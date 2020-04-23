@@ -30,11 +30,17 @@
                 (mouseleave)="displayPreview('none')" (mouseup)="sliderChange($event)"></mat-slider>
         </mat-toolbar-row> -->
         <mat-toolbar-row class="action">
-            <button mat-icon-button (click)="togglePlay()">
+            <button mat-icon-button (click)="goToStart()" [disabled]="currentTime === 0"
+                matTooltip="Stop and go to start" [matTooltipPosition]="matTooltipPos">
+                <mat-icon>skip_previous</mat-icon>
+            </button>
+            <button mat-icon-button (click)="togglePlay()" [matTooltip]="(play ? 'Pause' : 'Play')"
+                [matTooltipPosition]="matTooltipPos">
                 <mat-icon>{{ play ? "pause" : "play_arrow" }}</mat-icon>
             </button>
             <span class="fill-remaining-space"></span>
-            <button mat-icon-button (click)="updateTimeFromButton(-10)">
+            <button mat-icon-button (click)="updateTimeFromButton(-10)" [disabled]="currentTime < 10"
+                matTooltip="10 seconds backward" [matTooltipPosition]="matTooltipPos">
                 <mat-icon>replay_10</mat-icon>
             </button>
 
@@ -45,16 +51,19 @@
                 </p>
             </div>
 
-            <button mat-icon-button (click)="updateTimeFromButton(+10)">
+            <button mat-icon-button (click)="updateTimeFromButton(+10)" [disabled]="currentTime > (duration - 10)"
+                matTooltip="10 seconds forward" [matTooltipPosition]="matTooltipPos">
                 <mat-icon>forward_10</mat-icon>
             </button>
             <span class="fill-remaining-space"></span>
-            <button mat-icon-button (click)="muted = !muted">
+            <button mat-icon-button (click)="muted = !muted" [matTooltip]="(muted ? 'Unmute' : 'Mute')"
+                [matTooltipPosition]="matTooltipPos">
                 <mat-icon>
                     {{ muted ? "volume_mute" : "volume_up" }}
                 </mat-icon>
             </button>
-            <button mat-icon-button (click)="toggleCinemaMode()">
+            <button mat-icon-button (click)="toggleCinemaMode()"
+                [matTooltip]="(cinemaMode ? 'Default view' : 'Cinema mode')" [matTooltipPosition]="matTooltipPos">
                 <mat-icon>{{
                     cinemaMode ? "fullscreen_exit" : "fullscreen"
                 }}</mat-icon>

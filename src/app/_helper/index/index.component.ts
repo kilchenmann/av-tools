@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 export interface Video {
     'name': string;
@@ -42,9 +43,17 @@ export class IndexComponent implements OnInit {
         }
     ]
 
-    constructor() { }
+    constructor(
+        private router: Router
+    ) { }
 
     ngOnInit(): void {
+    }
+
+    openVideo(object: any) {
+        console.log('video in index', object.video);
+        console.log('time in index', object.time);
+        this.router.navigateByUrl('/video/' + object.video + '/' + object.time);
     }
 
 }
