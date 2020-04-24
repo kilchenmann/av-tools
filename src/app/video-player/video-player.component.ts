@@ -145,16 +145,16 @@ export class VideoPlayerComponent implements OnInit {
         };
 
         // calculate aspect ratio and set preview image size
-        this.aspectRatio = this.videoEle.nativeElement.videoWidth / this.videoEle.nativeElement.videoHeight;
+        // this.aspectRatio = this.videoEle.nativeElement.videoWidth / this.videoEle.nativeElement.videoHeight;
 
-        this.frameHeight = Math.round(this.frameWidth / this.aspectRatio);
+        // this.frameHeight = Math.round(this.frameWidth / this.aspectRatio);
         // this.preview.nativeElement.style['width'] = this.frameWidth + 'px';
         // this.preview.nativeElement.style['height'] = this.frameHeight + 'px';
 
         // get last frame and matrix number and last matrix line
-        this.lastMatrixNr = Math.floor((this.duration - 30) / 360);
-        this.lastFrameNr = Math.round((this.duration - 9) / 10);
-        this.lastMatrixLine = Math.ceil((this.lastFrameNr - (this.lastMatrixNr * 36)) / 6);
+        // this.lastMatrixNr = Math.floor((this.duration - 30) / 360);
+        // this.lastFrameNr = Math.round((this.duration - 9) / 10);
+        // this.lastMatrixLine = Math.ceil((this.lastFrameNr - (this.lastMatrixNr * 36)) / 6);
 
         // set default volume
         this.videoEle.nativeElement.volume = this.volume;
@@ -164,6 +164,7 @@ export class VideoPlayerComponent implements OnInit {
     loadedVideo(ev: Event) {
         this.loading = false;
         this.play = !this.videoEle.nativeElement.paused;
+        this.displayPreview('none');
         // console.log(this.videoEle);
     }
 
@@ -238,8 +239,9 @@ export class VideoPlayerComponent implements OnInit {
      */
     updatePreview(ev: pointerValue) {
         // console.log('update preview with', ev);
+        this.displayPreview('block')
 
-        this.previewTime = ev.time;
+        this.previewTime = Math.round(ev.time);
 
         // console.log('------------------------------------');
         // console.log('mousemove', (ev.offsetX / this.progress.nativeElement.clientWidth) * this.duration);

@@ -112,7 +112,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     toggleFlipbook(active: boolean) {
         this.focusOnPreview = active;
-        this.dispTime = !this.dispTime;
 
         let i: number = 0;
         let j: number = 0;
@@ -166,20 +165,12 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     // to test the difference between sipi single image calculation and css background position,
     // this method has the additional parameter `sipi` as boolean value to switch between the two variants quite quick
     calculateSizes(image: string, sipi: boolean) {
+
         // host dimension
         let parentFrameWidth: number = this._host.nativeElement.offsetWidth;
         let parentFrameHeight: number = this._host.nativeElement.offsetHeight;
-        if (parentFrameWidth === 0) {
-            parentFrameWidth = 160;
-            parentFrameHeight = 90;
-        }
-
-        console.log(this._host);
-
-        console.log('dim parent', parentFrameWidth, parentFrameHeight);
 
         this._matrix.getMatrixInfo(image + '/info.json').subscribe((res: any) => {
-            // console.log(res);
             // matrix dimension is:
             this.matrixWidth = res.width;
             this.matrixHeight = res.height;
@@ -189,8 +180,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             // get matrix frame dimension
             this.matrixFrameWidth = (this.matrixWidth / 6);
             this.matrixFrameHeight = (this.matrixHeight / lines);
-
-            console.log('dim matrix frame', this.matrixFrameWidth, this.matrixFrameHeight);
 
             this.lastMatrixNr = Math.floor((this.video.duration - 10) / 360);
 
@@ -221,8 +210,6 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
             this.frame.nativeElement.style['width'] = this.frameWidth + 'px';
             this.frame.nativeElement.style['height'] = this.frameHeight + 'px';
-
-            console.log('dim frame', this.frameWidth, this.frameHeight);
 
         });
 

@@ -51,8 +51,6 @@ export class IndexComponent implements OnInit {
     }
 
     openVideo(object: any) {
-        console.log('video in index', object.video);
-        console.log('time in index', object.time);
         this.router.navigateByUrl('/video/' + object.video + '/' + object.time);
     }
 

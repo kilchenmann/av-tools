@@ -150,7 +150,7 @@ export class AvTimelineComponent implements OnChanges {
 
         // // calc time value to submit to parent
         const time: number = (percentage * this.max);
-        console.log(time);
+
         this.change.emit(time);
     }
 
