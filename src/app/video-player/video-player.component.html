@@ -1,5 +1,5 @@
 <div class="player" kuiDisableContextMenu [class.cinema]="cinemaMode">
-    <div class="container" *ngIf="video && videoSrc">
+    <div class="container" *ngIf="name && videoSrc">
         <video class="video" #videoEle [src]="videoSrc" type="video/mp4" preload="auto" [muted]="muted"
             (click)="togglePlay()" (timeupdate)="timeUpdate($event)" (loadedmetadata)="loadedMetadata($event)"
             (canplaythrough)="loadedVideo($event)">
@@ -8,9 +8,11 @@
         <div class="preview-line">
             <!-- preview image -->
             <div class="preview" #preview>
-                <p class="preview-time">
+                <kui-video-preview *ngIf="video" [time]="previewTime" [video]="video" [dispTime]="true">
+                </kui-video-preview>
+                <!-- <p class="preview-time">
                     <span class="time">{{ previewTime | kuiTime }}</span>
-                </p>
+                </p> -->
             </div>
         </div>
     </div>

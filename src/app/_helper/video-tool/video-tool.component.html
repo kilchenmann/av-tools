@@ -3,8 +3,8 @@
         <mat-icon>arrow_back_ios</mat-icon>
     </button>
     <h2>
-        {{ video }}
+        {{ videoname | uppercase}}
     </h2>
 </mat-toolbar>
 <br /><br />
-<kui-video-player [video]="video" [start]="start"></kui-video-player>
+<kui-video-player [name]="videoname" [start]="starttime"></kui-video-player>

@@ -1,8 +1,7 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
-import { Video } from './../_helper/index/index.component';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { MatrixService } from '../_helper/matrix.service';
-import { environment } from 'src/environments/environment';
+import { Video } from './../_helper/index/index.component';
 
 @Component({
     selector: 'kui-video-preview',
@@ -38,6 +37,8 @@ import { environment } from 'src/environments/environment';
 })
 export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
+    @Input() dispTime?: boolean = false;
+
     /** needed video information: name and duration */
     @Input() video: Video;
 
@@ -71,13 +72,9 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     frameWidth: number;
     frameHeight: number;
 
-    // seconds per pixel to calculate preview image on timeline
-    // secondsPerPixel: number;
-
     // proportion between matrix frame size and parent container size
     // to calculate matrix background size
     proportion: number;
-
 
     @ViewChild('frame') frame: ElementRef;
 
@@ -87,26 +84,35 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     ) { }
 
     ngOnInit(): void {
-        this.time = this.time || (this.video.duration / 2);
 
-        this.matrix = environment.iiifUrl + this.video.name + '_m_0.jpg';
     }
 
     ngOnChanges() {
+        this.time = this.time || (this.video.duration / 2);
+
+        this.matrix = environment.iiifUrl + this.video.name + '_m_0.jpg';
+
+        if (!this.matrixFrameWidth && !this.matrixFrameHeight) {
+            this.calculateSizes(this.matrix, false);
+        }
         // TODO: update time from timeline
-        // console.log('something has changed', this.frameHeight)
+        // console.log('something has changed', this.time)
+        if (this.frame) {
+            this.updatePreviewByTime();
+        }
         // this.calculateSizes();
         // this.frameHeight = this.element.nativeElement.clientHeight;
     }
 
     ngAfterViewInit() {
 
-        this.calculateSizes(this.matrix, false);
+        // this.calculateSizes(this.matrix, false);
 
     }
 
     toggleFlipbook(active: boolean) {
         this.focusOnPreview = active;
+        this.dispTime = !this.dispTime;
 
         let i: number = 0;
         let j: number = 0;
@@ -160,6 +166,18 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     // to test the difference between sipi single image calculation and css background position,
     // this method has the additional parameter `sipi` as boolean value to switch between the two variants quite quick
     calculateSizes(image: string, sipi: boolean) {
+        // host dimension
+        let parentFrameWidth: number = this._host.nativeElement.offsetWidth;
+        let parentFrameHeight: number = this._host.nativeElement.offsetHeight;
+        if (parentFrameWidth === 0) {
+            parentFrameWidth = 160;
+            parentFrameHeight = 90;
+        }
+
+        console.log(this._host);
+
+        console.log('dim parent', parentFrameWidth, parentFrameHeight);
+
         this._matrix.getMatrixInfo(image + '/info.json').subscribe((res: any) => {
             // console.log(res);
             // matrix dimension is:
@@ -172,11 +190,9 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             this.matrixFrameWidth = (this.matrixWidth / 6);
             this.matrixFrameHeight = (this.matrixHeight / lines);
 
-            this.lastMatrixNr = Math.floor((this.video.duration - 10) / 360);
+            console.log('dim matrix frame', this.matrixFrameWidth, this.matrixFrameHeight);
 
-            // host dimension
-            const parentFrameWidth: number = this._host.nativeElement.offsetWidth;
-            const parentFrameHeight: number = this._host.nativeElement.offsetHeight;
+            this.lastMatrixNr = Math.floor((this.video.duration - 10) / 360);
 
             this.proportion = (this.matrixFrameWidth / parentFrameWidth);
 
@@ -206,6 +222,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
             this.frame.nativeElement.style['width'] = this.frameWidth + 'px';
             this.frame.nativeElement.style['height'] = this.frameHeight + 'px';
 
+            console.log('dim frame', this.frameWidth, this.frameHeight);
+
         });
 
     }
@@ -225,6 +243,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     updatePreviewByTime() {
+
         // overflow fixes
         if (this.time < 0) {
             this.time = 0;

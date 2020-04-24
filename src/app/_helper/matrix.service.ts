@@ -1,10 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-import { catchError, map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { Video } from './index/index.component';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Video } from './index/index.component';
 
 export interface Size {
     "width": number;

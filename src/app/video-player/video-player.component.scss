@@ -35,21 +35,27 @@
         display: none;
         border: 2px solid rgba(28, 28, 28, 0.9);
         border-radius: 2px;
+        width: 160px;
+        height: 90px;
 
-        .preview-time {
+        kui-video-preview {
           position: absolute;
-          bottom: 0;
-          margin: 0 auto;
-          width: 100%;
-          text-align: center;
-
-          .time {
-            background: rgba(28, 28, 28, 0.9);
-            color: white;
-            padding: 3px 6px;
-            border-radius: 2px;
-          }
         }
+
+        // .preview-time {
+        //   position: absolute;
+        //   bottom: 0;
+        //   margin: 0 auto;
+        //   width: 100%;
+        //   text-align: center;
+
+        //   .time {
+        //     background: rgba(28, 28, 28, 0.9);
+        //     color: white;
+        //     padding: 3px 6px;
+        //     border-radius: 2px;
+        //   }
+        // }
       }
     }
   }
