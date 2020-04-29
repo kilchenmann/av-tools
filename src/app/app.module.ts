@@ -9,7 +9,6 @@ import { AppComponent } from './app.component';
 import { AudioPlayerComponent } from './audio-player/audio-player.component';
 import { AvTimelineComponent } from './av-timeline/av-timeline.component';
 import { MaterialModule } from './material-module';
-import { VideoFrameComponent } from './video-frame/video-frame.component';
 import { VideoPlayerComponent } from './video-player/video-player.component';
 import { VideoPreviewComponent } from './video-preview/video-preview.component';
 import { AudioToolComponent } from './_helper/audio-tool/audio-tool.component';
@@ -27,7 +26,6 @@ import { HttpClientModule } from '@angular/common/http';
         AppComponent,
         TimePipe,
         AvTimelineComponent,
-        VideoFrameComponent,
         AudioPlayerComponent,
         AudioToolComponent,
         VideoPlayerComponent,

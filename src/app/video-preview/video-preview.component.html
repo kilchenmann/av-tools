@@ -1,17 +1,4 @@
-<!-- <div class="flipbook" #flipbook [class.active]="focusOnPreview === 'active'"
-    [@focus]="{ value: focusOnPreview, params: { varHeight: frameHeight } }" (mousemove)="updatePreview($event.offsetX)"
-    (mouseenter)="toggleFlibbook()" (mouseleave)="toggleFlibbook()">
-    <img [src]="matrix" class="matrix-loader" #matrixEle />
-    <p class="preview-time" *ngIf="preview">
-        <span class="time">{{ previewTime | kuiTime }}</span>
-    </p>
-</div> -->
-
-<!-- <div class="flipbook" [class.active]="focusOnPreview === 'active'" [@focus]="{ value: focusOnPreview}"> -->
-<!-- <div class="flipbook"> -->
-<!-- <kui-video-frame [video]="video" [updateSize]="focusOnPreview === 'active'"></kui-video-frame> -->
 <div class="frame" #frame></div>
 <p class="frame-time" *ngIf="time && (dispTime || focusOnPreview)">
     <span class="time">{{ time | kuiTime }}</span>
 </p>
-<!-- </div> -->
