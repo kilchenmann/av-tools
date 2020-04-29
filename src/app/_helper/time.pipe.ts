@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * The TimePipe transforms n seconds to hh:mm:ss or in case of zero hours to mm:ss
+ */
 @Pipe({
     name: 'kuiTime'
 })

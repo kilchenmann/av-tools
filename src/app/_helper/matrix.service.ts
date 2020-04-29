@@ -25,9 +25,6 @@ export interface SipiImageInfo {
     "profile": (string | Profile)[];
 }
 
-
-
-
 @Injectable({
     providedIn: 'root'
 })
@@ -35,9 +32,13 @@ export class MatrixService {
 
     constructor(
         private http: HttpClient
-        // private messageService: MessageService
     ) { }
 
+    /**
+     * Returns sipi image information about the matrix file
+     *
+     * @param matrix url to matrix file
+     */
     getMatrixInfo(matrix: string): Observable<SipiImageInfo> {
         return this.http.get<SipiImageInfo>(matrix)
             .pipe(
@@ -45,12 +46,12 @@ export class MatrixService {
             );
     }
 
-    getCurrentFrame(time: number, video: Video): string {
-        this.getMatrixInfo(environment.iiifUrl + video.name + '_m_0.jpg/info.json').subscribe((res: SipiImageInfo) => {
+    // getCurrentFrame(time: number, video: Video): string {
+    //     this.getMatrixInfo(environment.iiifUrl + video.name + '_m_0.jpg/info.json').subscribe((res: SipiImageInfo) => {
 
-        })
-        return 'sipiurl';
-    }
+    //     })
+    //     return 'sipiurl';
+    // }
 
 
     /**

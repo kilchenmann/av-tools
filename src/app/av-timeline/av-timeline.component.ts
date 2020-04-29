@@ -33,7 +33,7 @@ export class AvTimelineComponent implements OnChanges {
     /** end time value: Normally this is the duration */
     @Input() max: number;
 
-    /** in case parent resized: Will be used in video player when changed view mode to cinema and return  */
+    /** in case parent resized: Will be used in video player when switching between cinema and default view  */
     @Input() resized: boolean;
 
     /** send click position to parent */
