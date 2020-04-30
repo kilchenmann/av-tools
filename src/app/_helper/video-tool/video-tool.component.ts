@@ -9,11 +9,11 @@ import { ActivatedRoute } from '@angular/router';
 export class VideoToolComponent implements OnInit {
 
     videoname: string;
-    starttime: number = 0;
+    starttime = 0;
 
-    constructor(private _route: ActivatedRoute) {
-        this.videoname = this._route.snapshot.params['name'];
-        this.starttime = this._route.snapshot.params['start'];
+    constructor(private route: ActivatedRoute) {
+        this.videoname = this.route.snapshot.params.name;
+        this.starttime = this.route.snapshot.params.start;
     }
 
     ngOnInit(): void {

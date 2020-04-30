@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'kui-progress-indicator',
@@ -20,7 +20,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ProgressIndicatorComponent implements OnInit {
 
-    @Input() color?: string = 'primary';
+    @Input() color? = 'primary';
 
     constructor() { }
 

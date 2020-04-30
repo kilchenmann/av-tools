@@ -18,7 +18,7 @@ export class IndexComponent implements OnInit {
         {
             name: 'bunny',
             duration: 30,
-            description: 'Shortest test video (Matrix has only three frames) with AR 16:9. '
+            description: 'Shortest test video (Matrix has only three frames) with AR 16:9.'
         },
         {
             name: 'falcon9',
@@ -41,7 +41,7 @@ export class IndexComponent implements OnInit {
             duration: 375,
             description: 'Own test video with exotic AR 18:11'
         }
-    ]
+    ];
 
     constructor(
         private router: Router

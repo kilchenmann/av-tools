@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Video } from '../_helper/index/index.component';
-import { pointerValue } from '../av-timeline/av-timeline.component';
+import { PointerValue } from '../av-timeline/av-timeline.component';
 
 @Component({
     selector: 'kui-video-player',
@@ -163,7 +163,7 @@ export class VideoPlayerComponent implements OnInit {
     loadedVideo(ev: Event) {
         this.loading = false;
         this.play = !this.videoEle.nativeElement.paused;
-        this.displayPreview('none');
+        this.displayPreview(false);
         // console.log(this.videoEle);
     }
 
@@ -234,11 +234,11 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * Show preview image during "mousemove" on progress bar / timeline
      *
-     * @param  ev MouseEvent
+     * @param  ev PointerValue
      */
-    updatePreview(ev: pointerValue) {
+    updatePreview(ev: PointerValue) {
         // console.log('update preview with', ev);
-        this.displayPreview('block')
+        this.displayPreview(true);
 
         this.previewTime = Math.round(ev.time);
 
@@ -273,7 +273,7 @@ export class VideoPlayerComponent implements OnInit {
 
         // get current matrix image; one matrix contains 6 minute of the video
         // }
-        // updatePrevDepr(ev: pointerValue) {
+        // updatePrevDepr(ev: PointerValue) {
 
 
         /*
@@ -350,7 +350,9 @@ export class VideoPlayerComponent implements OnInit {
      *
      * @param status 'block' or 'none'
      */
-    displayPreview(status: 'block' | 'none') {
+    displayPreview(status: boolean) {
+
+        const display = (status ? 'block' : 'none');
 
         // get size of progress bar / timeline to calculate seconds per pixel
         // this.progressBarWidth = this.progress.nativeElement.offsetWidth;
@@ -360,7 +362,7 @@ export class VideoPlayerComponent implements OnInit {
 
         // display preview or hide it; depending on mouse event "enter" or "leave" on progress bar / timeline
         // TODO: reactivate here again after testing video-preview size
-        this.preview.nativeElement.style.display = status;
+        this.preview.nativeElement.style.display = display;
     }
 
 }

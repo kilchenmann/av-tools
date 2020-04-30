@@ -1,7 +1,7 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, SimpleChange, Renderer2 } from '@angular/core';
 import { CdkDragMove } from '@angular/cdk/drag-drop';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, Renderer2, SimpleChange, ViewChild } from '@angular/core';
 
-export interface pointerValue {
+export interface PointerValue {
     position: number;
     time: number;
 }
@@ -28,7 +28,7 @@ export class AvTimelineComponent implements OnChanges {
     @Input() value: number;
 
     /** start time value */
-    @Input() min?: number = 0;
+    @Input() min? = 0;
 
     /** end time value: Normally this is the duration */
     @Input() max: number;
@@ -37,19 +37,19 @@ export class AvTimelineComponent implements OnChanges {
     @Input() resized: boolean;
 
     /** send click position to parent */
-    @Output() change = new EventEmitter<number>();
+    @Output() changed = new EventEmitter<number>();
 
     /** send mouse position to parent */
-    @Output() move = new EventEmitter<pointerValue>();
+    @Output() move = new EventEmitter<PointerValue>();
 
     /** timeline element: main container */
-    @ViewChild('timeline') _timeline: ElementRef;
+    @ViewChild('timeline') timelineEle: ElementRef;
     /** progress element: thin bar line */
-    @ViewChild('progress') _progress: ElementRef;
+    @ViewChild('progress') progressEle: ElementRef;
     /** thumb element: current postion pointer */
-    @ViewChild('thumb') _thumb: ElementRef;
+    @ViewChild('thumb') thumbEle: ElementRef;
 
-    dragging: boolean = false;
+    dragging = false;
 
     /** size of timeline; will be used to calculate progress position in pixel corresponding to time value */
     timelineDimension: ClientRect | null = null;
@@ -57,12 +57,12 @@ export class AvTimelineComponent implements OnChanges {
     // dragEvent: any;
     // dragging: (event: any) => void;
 
-    constructor(private _renderer: Renderer2) {
+    constructor() {
         // this.dragging = this.unboundDragging.bind(this);
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        if (!this._timeline && !this._progress) {
+        if (!this.timelineEle && !this.progressEle) {
             return;
         }
 
@@ -71,7 +71,7 @@ export class AvTimelineComponent implements OnChanges {
             this.timelineDimension = this.getTimelineDimensions();
         } else {
             // recalculate timeline dimension because resized parameter has changed
-            if (changes['resized']) {
+            if (changes.resized) {
                 this.timelineDimension = this.getResizedTimelineDimensions();
             }
         }
@@ -98,12 +98,12 @@ export class AvTimelineComponent implements OnChanges {
 
         if (!this.dragging) {
             // update thumb position if not dragging
-            this._thumb.nativeElement.style['transform'] = 'translateX(' + pos + 'px) scale(.7)';
+            this.thumbEle.nativeElement.style.transform = 'translateX(' + pos + 'px) scale(.7)';
         }
         // adjust progress width / fill already played time
-        this._progress.nativeElement.children[0].style['transform'] = 'translateX(0px) scale3d(' + bgPos + ', 1, 1)';
+        this.progressEle.nativeElement.children[0].style.transform = 'translateX(0px) scale3d(' + bgPos + ', 1, 1)';
         // adjust progress width / progress background
-        this._progress.nativeElement.children[2].style['transform'] = 'translateX(0px) scale3d(' + fillPos + ', 1, 1)';
+        this.progressEle.nativeElement.children[2].style.transform = 'translateX(0px) scale3d(' + fillPos + ', 1, 1)';
     }
 
     toggleDragging() {
@@ -135,7 +135,7 @@ export class AvTimelineComponent implements OnChanges {
             time = this.max;
         }
 
-        this.move.emit({ position: ev.clientX, time: time })
+        this.move.emit({ position: ev.clientX, time });
     }
 
     _onMouseup(ev: MouseEvent) {
@@ -151,7 +151,7 @@ export class AvTimelineComponent implements OnChanges {
         // // calc time value to submit to parent
         const time: number = (percentage * this.max);
 
-        this.change.emit(time);
+        this.changed.emit(time);
     }
 
     /** event listener on window resize */
@@ -165,12 +165,12 @@ export class AvTimelineComponent implements OnChanges {
      * take up.
      */
     private getTimelineDimensions(): ClientRect | null {
-        return this._timeline ? this._timeline.nativeElement.getBoundingClientRect() : null;
+        return this.timelineEle ? this.timelineEle.nativeElement.getBoundingClientRect() : null;
     }
 
     private getResizedTimelineDimensions(): ClientRect | null {
         // recalculate timeline dimension
-        let newDimension: ClientRect = this.getTimelineDimensions();
+        const newDimension: ClientRect = this.getTimelineDimensions();
 
         if (this.timelineDimension.width !== newDimension.width) {
             return newDimension;

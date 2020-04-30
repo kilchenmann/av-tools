@@ -2,27 +2,25 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { Video } from './index/index.component';
 
 export interface Size {
-    "width": number;
-    "height": number;
+    'width': number;
+    'height': number;
 }
 export interface Profile {
-    "formats": [string];
-    "qualities": [string];
-    "supports": [string];
+    'formats': [string];
+    'qualities': [string];
+    'supports': [string];
 }
 
 export interface SipiImageInfo {
-    "@context": string;
-    "@id": string;
-    "protocol": string;
-    "width": number;
-    "height": number;
-    "sizes": [Size];
-    "profile": (string | Profile)[];
+    '@context': string;
+    '@id': string;
+    'protocol': string;
+    'width': number;
+    'height': number;
+    'sizes': [Size];
+    'profile': (string | Profile)[];
 }
 
 @Injectable({
