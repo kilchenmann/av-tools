@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { pointerValue } from '../av-timeline/av-timeline.component';
 import { environment } from '../../environments/environment';
 import { Video } from '../_helper/index/index.component';
+import { pointerValue } from '../av-timeline/av-timeline.component';
 
 @Component({
     selector: 'kui-video-player',
@@ -10,13 +10,12 @@ import { Video } from '../_helper/index/index.component';
 })
 export class VideoPlayerComponent implements OnInit {
 
-    loading: boolean = true;
+    loading = true;
 
     @Input() name: string;
-    @Input() start?: number = 0;
+    @Input() start?= 0;
     videoSrc: string;
     video: Video;
-
 
     @ViewChild('videoEle') videoEle: ElementRef;
     @ViewChild('timeline') timeline: ElementRef;
@@ -27,7 +26,7 @@ export class VideoPlayerComponent implements OnInit {
     aspectRatio: number;
 
     // preview image information
-    frameWidth: number = 160;
+    frameWidth = 160;
     halfFrameWidth: number = Math.round(this.frameWidth / 2);
     frameHeight: number;
     lastFrameNr: number;
@@ -39,12 +38,12 @@ export class VideoPlayerComponent implements OnInit {
     lastMatrixLine: number;
 
     // size of progress bar / timeline
-    progressBarWidth: number
+    progressBarWidth: number;
 
     // time information
     duration: number;
     currentTime: number = this.start;
-    previewTime: number = 0;
+    previewTime = 0;
 
     // seconds per pixel to calculate preview image on timeline
     secondsPerPixel: number;
@@ -53,19 +52,19 @@ export class VideoPlayerComponent implements OnInit {
     currentBuffer: number;
 
     // status
-    play: boolean = false;
+    play = false;
 
     // volume
-    volume: number = .75;
-    muted: boolean = false;
+    volume = .75;
+    muted = false;
 
     // video player mode
-    cinemaMode: boolean = false;
+    cinemaMode = false;
 
     // matTooltipPosition
-    matTooltipPos: string = 'above';
+    matTooltipPos = 'above';
 
-    constructor(private _videoPlayer: ElementRef) { }
+    constructor() { }
 
     ngOnInit(): void {
         if (this.name) {
@@ -100,10 +99,10 @@ export class VideoPlayerComponent implements OnInit {
         this.cinemaMode = !this.cinemaMode;
     }
 
+
     /**
-     * Update of current time info and buffer state
-     *
-     * @param  {Event} ev
+     * Update current time info and buffer size
+     * @param ev Event
      */
     timeUpdate(ev: Event) {
         // current time
@@ -113,14 +112,14 @@ export class VideoPlayerComponent implements OnInit {
         this.currentBuffer = (this.videoEle.nativeElement.buffered.end(0) / this.duration) * 100;
 
         let range = 0;
-        let bf = this.videoEle.nativeElement.buffered;
+        const bf = this.videoEle.nativeElement.buffered;
 
         while (!(bf.start(range) <= this.currentTime && this.currentTime <= bf.end(range))) {
             range += 1;
         }
-        let loadStartPercentage = (bf.start(range) / this.duration) * 100;
-        let loadEndPercentage = (bf.end(range) / this.duration) * 100;
-        let loadPercentage = (loadEndPercentage - loadStartPercentage);
+        const loadStartPercentage = (bf.start(range) / this.duration) * 100;
+        const loadEndPercentage = (bf.end(range) / this.duration) * 100;
+        // let loadPercentage = (loadEndPercentage - loadStartPercentage);
 
         // console.log(loadPercentage);
 
@@ -134,7 +133,7 @@ export class VideoPlayerComponent implements OnInit {
      * As soon as video has status "loadedmetadata" we're able to read
      * information about duration, video size and set volume
      *
-     * @param  {Event} ev
+     * @param ev Event
      */
     loadedMetadata(ev: Event) {
         // get video duration
@@ -171,7 +170,7 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * Video navigation from button (-/+ 10 sec)
      *
-     * @param  {number} range
+     * @param range positive or negative number value
      */
     updateTimeFromButton(range: number) {
         this.navigate(this.currentTime + range);
@@ -179,7 +178,7 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * Video naviagtion from timeline / progress bar
      *
-     * @param  {MatSliderChange} ev
+     * @param ev MatSliderChange
      */
     updateTimeFromSlider(time: number) {
         this.navigate(time);
@@ -187,7 +186,7 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * Video navigation from scroll event
      *
-     * @param  {WheelEvent} ev
+     * @param ev WheelEvent
      */
     updateTimeFromScroll(ev: WheelEvent) {
         ev.preventDefault();
@@ -196,7 +195,7 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * General video navigation: Update current video time from position
      *
-     * @param  {number} position
+     * @param position Pixelnumber
      */
     private navigate(position: number) {
 
@@ -235,7 +234,7 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * Show preview image during "mousemove" on progress bar / timeline
      *
-     * @param  {MouseEvent} ev
+     * @param  ev MouseEvent
      */
     updatePreview(ev: pointerValue) {
         // console.log('update preview with', ev);
@@ -321,7 +320,7 @@ export class VideoPlayerComponent implements OnInit {
         // console.log('left position of preview', leftPosition);
 
         if (this.cinemaMode) {
-            //ev.screenX
+            // ev.screenX
             // prevent overflow of preview image on the left
             if (leftPosition <= 8) {
                 leftPosition = 8;
@@ -341,7 +340,7 @@ export class VideoPlayerComponent implements OnInit {
             }
         }
         // set preview positon on x axis
-        this.preview.nativeElement.style['left'] = leftPosition + 'px';
+        this.preview.nativeElement.style.left = leftPosition + 'px';
 
 
     }
@@ -349,9 +348,9 @@ export class VideoPlayerComponent implements OnInit {
     /**
      * Show preview image or hide it
      *
-     * @param  {string} status
+     * @param status 'block' or 'none'
      */
-    displayPreview(status: string) {
+    displayPreview(status: 'block' | 'none') {
 
         // get size of progress bar / timeline to calculate seconds per pixel
         // this.progressBarWidth = this.progress.nativeElement.offsetWidth;
@@ -361,7 +360,7 @@ export class VideoPlayerComponent implements OnInit {
 
         // display preview or hide it; depending on mouse event "enter" or "leave" on progress bar / timeline
         // TODO: reactivate here again after testing video-preview size
-        this.preview.nativeElement.style['display'] = status;
+        this.preview.nativeElement.style.display = status;
     }
 
 }
