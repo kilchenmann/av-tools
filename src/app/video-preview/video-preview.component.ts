@@ -32,7 +32,7 @@ import { Video } from './../_helper/index/index.component';
         '(mouseenter)': 'toggleFlipbook(true)',
         '(mouseleave)': 'toggleFlipbook(false)',
         '(mousemove)': 'updatePreviewByPosition($event)',
-        '(click)': 'openvideo.emit({ video: this.video.name, time: Math.round(this.time) })'
+        '(click)': 'openVideo()'
     }
 })
 export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
@@ -45,7 +45,7 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     /** show frame at the corresponding time */
     @Input() time?: number;
 
-    @Output() openvideo = new EventEmitter<{ video: string, time: number }>();
+    @Output() open = new EventEmitter<{ video: string, time: number }>();
 
     focusOnPreview = false;
 
@@ -284,9 +284,9 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
-    // openVideo() {
-    //     this.openvideo.emit({ video: this.video.name, time: Math.round(this.time) });
-    // }
+    openVideo() {
+        this.open.emit({ video: this.video.name, time: Math.round(this.time) });
+    }
 
 
 
