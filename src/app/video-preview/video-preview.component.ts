@@ -32,12 +32,12 @@ import { Video } from './../_helper/index/index.component';
         '(mouseenter)': 'toggleFlipbook(true)',
         '(mouseleave)': 'toggleFlipbook(false)',
         '(mousemove)': 'updatePreviewByPosition($event)',
-        '(click)': 'openVideo()'
+        '(click)': 'openvideo.emit({ video: this.video.name, time: Math.round(this.time) })'
     }
 })
 export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
-    @Input() dispTime?: boolean = false;
+    @Input() dispTime = false;
 
     /** needed video information: name and duration */
     @Input() video: Video;
@@ -45,9 +45,9 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     /** show frame at the corresponding time */
     @Input() time?: number;
 
-    @Output() open = new EventEmitter<{ video: string, time: number }>();
+    @Output() openvideo = new EventEmitter<{ video: string, time: number }>();
 
-    focusOnPreview: boolean = false;
+    focusOnPreview = false;
 
     // video information
     aspectRatio: number;
@@ -113,8 +113,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     toggleFlipbook(active: boolean) {
         this.focusOnPreview = active;
 
-        let i: number = 0;
-        let j: number = 0;
+        let i = 0;
+        let j = 0;
 
         if (this.focusOnPreview) {
             // automatic playback of individual frames from first matrix
@@ -130,8 +130,8 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
     autoPlay(i: number, j: number, sipi: boolean, delay: number = 250) {
         let iiifParams: string;
         let cssParams: string;
-        let x: number = 0;
-        let y: number = 0;
+        let x = 0;
+        let y = 0;
 
         setTimeout(() => {
 
@@ -284,9 +284,9 @@ export class VideoPreviewComponent implements OnInit, AfterViewInit, OnChanges {
 
     }
 
-    openVideo() {
-        this.open.emit({ video: this.video.name, time: Math.round(this.time) });
-    }
+    // openVideo() {
+    //     this.openvideo.emit({ video: this.video.name, time: Math.round(this.time) });
+    // }
 
 
 

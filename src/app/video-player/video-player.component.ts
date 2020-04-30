@@ -117,8 +117,8 @@ export class VideoPlayerComponent implements OnInit {
         while (!(bf.start(range) <= this.currentTime && this.currentTime <= bf.end(range))) {
             range += 1;
         }
-        const loadStartPercentage = (bf.start(range) / this.duration) * 100;
-        const loadEndPercentage = (bf.end(range) / this.duration) * 100;
+        // const loadStartPercentage = (bf.start(range) / this.duration) * 100;
+        // const loadEndPercentage = (bf.end(range) / this.duration) * 100;
         // let loadPercentage = (loadEndPercentage - loadStartPercentage);
 
         // console.log(loadPercentage);
@@ -160,7 +160,7 @@ export class VideoPlayerComponent implements OnInit {
 
     }
 
-    loadedVideo(ev: Event) {
+    loadedVideo() {
         this.loading = false;
         this.play = !this.videoEle.nativeElement.paused;
         this.displayPreview(false);

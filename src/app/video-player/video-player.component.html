@@ -2,7 +2,7 @@
     <div class="container" *ngIf="name && videoSrc">
         <video class="video" #videoEle [src]="videoSrc" type="video/mp4" preload="auto" [muted]="muted"
             (click)="togglePlay()" (timeupdate)="timeUpdate($event)" (loadedmetadata)="loadedMetadata($event)"
-            (canplaythrough)="loadedVideo($event)">
+            (canplaythrough)="loadedVideo()">
         </video>
 
         <div class="preview-line">
